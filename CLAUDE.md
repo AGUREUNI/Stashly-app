@@ -1,0 +1,63 @@
+# Slack Canvas Collector
+
+## プロジェクト概要
+Slackで特定の絵文字リアクションが付いているメッセージを自動収集し、Canvasに整理してまとめるアプリ。
+
+## 技術スタック
+- **言語**: TypeScript
+- **ランタイム**: Node.js
+- **フレームワーク**: @slack/bolt v4
+- **パッケージマネージャ**: npm
+
+## プロジェクト構成
+```
+src/
+├── app.ts                          # Bolt app初期化・起動
+├── listeners/commands/
+│   ├── index.ts                    # コマンドリスナー登録
+│   └── canvas-collect.ts           # /canvas-collect ハンドラ
+├── services/
+│   ├── command-parser.ts           # コマンド引数パーサー
+│   ├── message-collector.ts        # メッセージ収集ロジック
+│   ├── canvas-manager.ts           # Canvas検索・作成・追記
+│   ├── markdown-builder.ts         # Canvas用Markdown生成
+│   ├── slack-api.ts                # Slack APIラッパー（リトライ付き）
+│   └── lock-manager.ts             # 同時実行制御（インメモリ）
+├── types/
+│   └── index.ts                    # 型定義
+└── utils/
+    └── date.ts                     # 日付ユーティリティ
+```
+
+## コマンド
+- `npm run dev` - 開発用（ts-node）
+- `npm run build` - TypeScriptビルド → dist/
+- `npm start` - 本番起動（node dist/app.js）
+
+## 環境変数
+- `SLACK_BOT_TOKEN` - Bot Token (xoxb-)
+- `SLACK_SIGNING_SECRET` - Signing Secret
+- `SLACK_APP_TOKEN` - App Token (xapp-) ※ソケットモード用
+- `PORT` - HTTPポート（デフォルト: 3000）
+
+## ローカル開発時の注意: Socket Mode プロセス残留問題
+
+Socket Mode で起動した node プロセスはバックグラウンドに残りやすく、古いコードのまま Slack のコマンドを処理し続ける。
+コード変更が反映されない場合は、まずプロセス残留を疑うこと。
+
+### 確実な再起動手順
+```bash
+# 1. 既存の node プロセスを全て終了
+taskkill //F //IM node.exe
+
+# 2. ビルドしてからコンパイル済み JS で起動（ts-node はキャッシュ問題があるため非推奨）
+npm run build && node dist/app.js
+```
+
+### やってはいけないこと
+- `npm run dev`（ts-node）での開発 → キャッシュで古いコードが使われる場合がある
+- プロセスを止めずに再起動 → 古いインスタンスがコマンドを横取りする
+
+## 起動時に読むドキュメント
+- `implementation_plan.md` - 実装プラン（設計方針・ステップ・技術的判断の経緯）
+- `slack_canvas_collector_spec_v1_4.md` - 詳細仕様書
