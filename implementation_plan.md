@@ -215,6 +215,29 @@ MVP（最初にやること）:
 
 全Step完了で、仕様書のフェーズ2+3の機能が揃う。
 
+---
+
+## フェーズ4: UI/UX磨き ✅ 完了
+
+エフェメラルメッセージをBlock Kit化し、視認性・UXを向上。
+
+### 変更内容
+
+| ファイル | 変更種別 | 内容 |
+|---------|---------|------|
+| `src/services/block-builder.ts` | **新規** | Block Kit構築関数5つ（収集中・完了・該当なし・エラー・ロック競合） |
+| `src/listeners/commands/canvas-collect.ts` | 修正 | sendEphemeralにblocks対応、全メッセージをBlock Kit化 |
+| `src/services/markdown-builder.ts` | 修正 | channelCount引数追加、`:link:` 絵文字追加 |
+| `src/services/canvas-manager.ts` | 修正 | Canvas URL形式を修正（team_domain + team_id） |
+
+### 検証結果
+
+1. `/canvas-collect :thumbsup:` → Block Kit化された収集中メッセージ & 完了通知 ✅
+2. `/canvas-collect`（引数なし）→ Block Kit化されたエラーメッセージ ✅
+3. `/canvas-collect :thumbsup:` 素早く2回 → Block Kit化されたロック競合メッセージ ✅
+4. 完了通知のCanvasリンクからSlackアプリ内で直接Canvas遷移 ✅
+5. Canvas内の `:link:` 絵文字とチャンネル数が正しく表示 ✅
+
 ## 実装中の発見・修正事項
 
 ### Canvas API: h4非対応
@@ -225,6 +248,20 @@ MVP（最初にやること）:
 ### Slackコマンドのチャンネル自動変換
 - スラッシュコマンドで `#channel` と入力しても、Slackが `<#C1234|name>` 形式に自動変換しないケースがある
 - **対応**: `#channel-name` プレーンテキスト形式もパースし、`conversations.list` でチャンネル名→ID解決を行うように修正
+
+### Canvas URL形式
+- `https://slack.com/docs/{canvas_id}` や `https://app.slack.com/docs/{team_id}/{canvas_id}` ではSlackアプリ内で直接開けない
+- 正しい形式: `https://{team_domain}.slack.com/docs/{team_id}/{canvas_id}`
+- **対応**: `command.team_domain` と `command.team_id` からURLを構築するように `canvas-manager.ts` を修正
+
+### Block Kit: url付きボタン vs mrkdwnリンク
+- Actions blockの `url` 付きボタンはSlackの仕様で**外部ブラウザ**で開く
+- Slack内部リンク（Canvas等）をアプリ内で直接開きたい場合は不向き
+- **対応**: Section block内のmrkdwnリンク `<url|テキスト>` に変更（Slackアプリ内で遷移可能）
+
+### Block Kit: KnownBlock型のインポート
+- `KnownBlock` は `@slack/bolt` から直接エクスポートされていない
+- **対応**: `@slack/types` からインポート
 
 ### Socket Mode プロセス残留
 - バックグラウンドで起動した node プロセスが終了されず残留しやすい

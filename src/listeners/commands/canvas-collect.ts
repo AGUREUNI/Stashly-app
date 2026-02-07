@@ -1,10 +1,18 @@
 import type { App } from '@slack/bolt';
+import type { KnownBlock } from '@slack/types';
 import { parseCommand } from '../../services/command-parser';
 import { collectMessages, resolveChannelNames } from '../../services/message-collector';
 import { buildMarkdown, buildAppendMarkdown } from '../../services/markdown-builder';
 import { upsertCanvas } from '../../services/canvas-manager';
 import { lockManager } from '../../services/lock-manager';
 import { AppError } from '../../types';
+import {
+  buildCollectingBlocks,
+  buildCompletionBlocks,
+  buildNoResultBlocks,
+  buildErrorBlocks,
+  buildLockConflictBlocks,
+} from '../../services/block-builder';
 
 export function registerCanvasCollectCommand(app: App): void {
   app.command('/canvas-collect', async ({ command, ack, client }) => {
@@ -13,23 +21,23 @@ export function registerCanvasCollectCommand(app: App): void {
 
     const channelId = command.channel_id;
     const userId = command.user_id;
+    const teamId = command.team_id;
+    const teamDomain = command.team_domain;
 
     // エフェメラルメッセージ送信ヘルパー
-    const sendEphemeral = async (text: string) => {
+    const sendEphemeral = async (text: string, blocks?: KnownBlock[]) => {
       await client.chat.postEphemeral({
         channel: channelId,
         user: userId,
         text,
+        ...(blocks ? { blocks } : {}),
       });
     };
-
-    // 2. 収集中メッセージ送信
-    await sendEphemeral('🐿️ 収集中...');
 
     let emoji: string | undefined;
 
     try {
-      // 3. コマンドパース → バリデーション
+      // 2. コマンドパース → バリデーション
       const parsed = parseCommand(command.text ?? '');
       emoji = parsed.emoji;
 
@@ -39,35 +47,41 @@ export function registerCanvasCollectCommand(app: App): void {
         const { resolved, notFound } = await resolveChannelNames(client, parsed.channelNames);
         resolvedChannelIds = resolved;
         if (notFound.length > 0) {
-          await sendEphemeral(`❌ チャンネル ${notFound.map(n => `#${n}`).join(', ')} が見つかりません`);
+          const msg = `❌ チャンネル ${notFound.map(n => `#${n}`).join(', ')} が見つかりません`;
+          await sendEphemeral(msg, buildErrorBlocks(msg));
           return;
         }
       }
 
-      // 4. ロック取得
+      // 3. 対象チャンネルを決定
+      const targetChannels = new Set<string>([channelId, ...parsed.channels, ...resolvedChannelIds]);
+      const channelIds = Array.from(targetChannels);
+
+      // 4. 収集中メッセージ送信
+      await sendEphemeral(
+        `🐿️ ${channelIds.length}チャンネルから :${emoji}: を収集中...`,
+        buildCollectingBlocks(emoji, channelIds.length),
+      );
+
+      // 5. ロック取得
       if (!lockManager.acquire(emoji)) {
-        await sendEphemeral(`⏳ 現在 :${emoji}: の収集が実行中です\nしばらく待ってから再度お試しください`);
+        await sendEphemeral(
+          `⏳ 現在 :${emoji}: の収集が実行中です`,
+          buildLockConflictBlocks(emoji),
+        );
         return;
       }
 
       try {
-        // 5. 対象チャンネルを決定
-        const targetChannels = new Set<string>([channelId, ...parsed.channels, ...resolvedChannelIds]);
-        const channelIds = Array.from(targetChannels);
-
         // 6. メッセージ収集
         const result = await collectMessages(client, emoji, channelIds, parsed.periodDays);
 
         // 該当なし
         if (result.messages.length === 0) {
-          let msg = 'ℹ️ 該当するメッセージが見つかりませんでした';
-          if (result.skippedChannels.length > 0) {
-            msg += '\n\n⚠️ 以下のチャンネルはBotが参加していないためスキップしました:';
-            for (const ch of result.skippedChannels) {
-              msg += `\n・#${ch.name}`;
-            }
-          }
-          await sendEphemeral(msg);
+          await sendEphemeral(
+            'ℹ️ 該当するメッセージが見つかりませんでした',
+            buildNoResultBlocks(result.skippedChannels),
+          );
           return;
         }
 
@@ -77,8 +91,8 @@ export function registerCanvasCollectCommand(app: App): void {
           .map(([chId]) => chId);
 
         // 7. Canvas検索 → 作成 or 追記
-        const newMarkdown = buildMarkdown(emoji, result.messages);
-        const appendMarkdown = buildAppendMarkdown(emoji, result.messages);
+        const newMarkdown = buildMarkdown(emoji, result.messages, channelIds.length);
+        const appendMarkdown = buildAppendMarkdown(emoji, result.messages, channelIds.length);
 
         const { canvasUrl, isNew } = await upsertCanvas(
           client,
@@ -86,28 +100,19 @@ export function registerCanvasCollectCommand(app: App): void {
           emoji,
           newMarkdown,
           appendMarkdown,
+          teamId,
+          teamDomain,
         );
 
         // 8. 完了通知
-        let completionMsg = `✅ ${result.messages.length}件のメッセージを収集しました\n📄 Canvasを確認: ${canvasUrl}`;
-
-        // 上限超過警告
-        if (limitReachedChannels.length > 0) {
-          completionMsg += '\n\n⚠️ 500件以上のメッセージが見つかりました\n期間を絞って再実行してください\n例: `/canvas-collect :' + emoji + ': 過去7日`';
-        }
-
-        // スキップチャンネル通知
-        if (result.skippedChannels.length > 0) {
-          completionMsg += '\n\n⚠️ 以下のチャンネルはBotが参加していないためスキップしました:';
-          for (const ch of result.skippedChannels) {
-            completionMsg += `\n・#${ch.name}`;
-          }
-        }
-
-        // ヒント
-        completionMsg += '\n\n💡 ヒント: 重複を避けるには期間指定がおすすめ！\n例: `/canvas-collect :' + emoji + ': 過去7日`';
-
-        await sendEphemeral(completionMsg);
+        const completionText = `✅ ${result.messages.length}件のメッセージを収集しました 📄 Canvas: ${canvasUrl}`;
+        await sendEphemeral(
+          completionText,
+          buildCompletionBlocks(emoji, result.messages.length, canvasUrl, {
+            limitReachedChannels: limitReachedChannels.length > 0 ? limitReachedChannels : undefined,
+            skippedChannels: result.skippedChannels.length > 0 ? result.skippedChannels : undefined,
+          }),
+        );
       } finally {
         // 9. ロック解除（finally句で確実に）
         if (emoji) {
@@ -117,9 +122,10 @@ export function registerCanvasCollectCommand(app: App): void {
     } catch (error) {
       // エラーハンドリング
       if (error instanceof AppError) {
-        await sendEphemeral(error.message);
+        await sendEphemeral(error.message, buildErrorBlocks(error.message));
       } else {
-        await sendEphemeral('❌ 予期しないエラーが発生しました\nしばらく待ってから再度お試しください');
+        const msg = '❌ 予期しないエラーが発生しました\nしばらく待ってから再度お試しください';
+        await sendEphemeral(msg, buildErrorBlocks(msg));
       }
     }
   });

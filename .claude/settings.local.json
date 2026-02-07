@@ -3,7 +3,10 @@
     "allow": [
       "Bash(npx tsc:*)",
       "Bash(npm run dev:*)",
-      "Bash(tasklist:*)"
+      "Bash(tasklist:*)",
+      "Bash(taskkill:*)",
+      "Bash(npm run build:*)",
+      "Bash(node dist/app.js:*)"
     ]
   }
 }

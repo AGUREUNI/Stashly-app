@@ -13,7 +13,7 @@ import { slackTsToDate, formatDateUTC, formatDateOnlyUTC } from '../utils/date';
  * **2026-02-04**
  * - 09:20 (UTC) [メッセージを見る](https://...)
  */
-export function buildMarkdown(emoji: string, messages: CollectedMessage[]): string {
+export function buildMarkdown(emoji: string, messages: CollectedMessage[], channelCount?: number): string {
   const now = new Date();
   const lines: string[] = [];
 
@@ -21,6 +21,9 @@ export function buildMarkdown(emoji: string, messages: CollectedMessage[]): stri
   lines.push(`## :${emoji}: 収集結果`);
   lines.push(`最終更新: ${formatDateUTC(now)}`);
   lines.push(`収集件数: ${messages.length}件`);
+  if (channelCount !== undefined) {
+    lines.push(`対象チャンネル: ${channelCount}`);
+  }
   lines.push('');
 
   // チャンネル別 → 日付別にグループ化
@@ -39,7 +42,7 @@ export function buildMarkdown(emoji: string, messages: CollectedMessage[]): stri
         const timeStr = `${h}:${m} (UTC)`;
 
         if (msg.permalink) {
-          lines.push(`- ${timeStr} [メッセージを見る](${msg.permalink})`);
+          lines.push(`- ${timeStr} [:link: メッセージを見る](${msg.permalink})`);
         } else {
           lines.push(`- ${timeStr} (リンク取得失敗)`);
         }
@@ -56,12 +59,12 @@ export function buildMarkdown(emoji: string, messages: CollectedMessage[]): stri
  * 追記用のMarkdownを生成（新規セクション）
  * 既存Canvasに追記する際は、区切り線の後にコンテンツを追加
  */
-export function buildAppendMarkdown(emoji: string, messages: CollectedMessage[]): string {
+export function buildAppendMarkdown(emoji: string, messages: CollectedMessage[], channelCount?: number): string {
   const lines: string[] = [];
 
   lines.push('---');
   lines.push('');
-  lines.push(buildMarkdown(emoji, messages));
+  lines.push(buildMarkdown(emoji, messages, channelCount));
 
   return lines.join('\n');
 }

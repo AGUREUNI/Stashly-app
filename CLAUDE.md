@@ -17,6 +17,7 @@ src/
 │   ├── index.ts                    # コマンドリスナー登録
 │   └── canvas-collect.ts           # /canvas-collect ハンドラ
 ├── services/
+│   ├── block-builder.ts            # Block Kit構築（エフェメラルメッセージ用）
 │   ├── command-parser.ts           # コマンド引数パーサー
 │   ├── message-collector.ts        # メッセージ収集ロジック
 │   ├── canvas-manager.ts           # Canvas検索・作成・追記

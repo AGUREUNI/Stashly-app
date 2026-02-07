@@ -66,6 +66,8 @@ export async function createCanvas(
   channelId: string,
   emoji: string,
   markdownContent: string,
+  teamId: string,
+  teamDomain: string,
 ): Promise<{ canvasId: string; canvasUrl: string }> {
   const title = getCanvasTitle(emoji);
 
@@ -85,7 +87,7 @@ export async function createCanvas(
   }
 
   // Canvas URLを生成
-  const canvasUrl = result.canvas_url ?? `https://slack.com/docs/${result.canvas_id}`;
+  const canvasUrl = result.canvas_url ?? `https://${teamDomain}.slack.com/docs/${teamId}/${result.canvas_id}`;
 
   return {
     canvasId: result.canvas_id,
@@ -126,6 +128,8 @@ export async function upsertCanvas(
   emoji: string,
   newContentMarkdown: string,
   appendContentMarkdown: string,
+  teamId: string,
+  teamDomain: string,
 ): Promise<{ canvasUrl: string; isNew: boolean }> {
   const existing = await findCanvas(client, channelId, emoji);
 
@@ -133,11 +137,11 @@ export async function upsertCanvas(
     // 既存Canvasに追記
     await appendToCanvas(client, existing.id, appendContentMarkdown);
 
-    const canvasUrl = `https://slack.com/docs/${existing.id}`;
+    const canvasUrl = `https://${teamDomain}.slack.com/docs/${teamId}/${existing.id}`;
     return { canvasUrl, isNew: false };
   } else {
     // 新規作成
-    const { canvasUrl } = await createCanvas(client, channelId, emoji, newContentMarkdown);
+    const { canvasUrl } = await createCanvas(client, channelId, emoji, newContentMarkdown, teamId, teamDomain);
     return { canvasUrl, isNew: true };
   }
 }
