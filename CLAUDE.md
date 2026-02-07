@@ -24,6 +24,10 @@ src/
 │   ├── markdown-builder.ts         # Canvas用Markdown生成
 │   ├── slack-api.ts                # Slack APIラッパー（リトライ付き）
 │   └── lock-manager.ts             # 同時実行制御（インメモリ）
+├── i18n/
+│   ├── types.ts                    # i18n型定義（Messages, SupportedLocale）
+│   ├── index.ts                    # i18nコア（t(), getUserLocale(), resolveLocale()）
+│   └── locales/                    # 言語ファイル（ja, en, hi, fr, es, zh, ko）
 ├── types/
 │   └── index.ts                    # 型定義
 └── utils/
@@ -58,6 +62,15 @@ npm run build && node dist/app.js
 ### やってはいけないこと
 - `npm run dev`（ts-node）での開発 → キャッシュで古いコードが使われる場合がある
 - プロセスを止めずに再起動 → 古いインスタンスがコマンドを横取りする
+
+## i18n（多言語対応）
+- 7言語対応: ja, en, hi, fr, es, zh, ko
+- 外部ライブラリ不使用、`{{variable}}` プレースホルダー方式で自作
+- `t(locale, key, params?)` で翻訳、`getUserLocale(client, userId)` でlocale取得（30分キャッシュ）
+- Canvas タイトルは英語固定 `:emoji: Collection Log`（検索整合性のため）
+- 期間指定は全7言語でパース可能（1つの複合正規表現で一括マッチ）
+- `AppError.messageKey` でi18nキーを格納、catch側で `t(locale, key)` で翻訳
+- 追加スコープ: `users:read`（locale取得に必要）, `chat:write`（エフェメラル送信に必須）
 
 ## 起動時に読むドキュメント
 - `implementation_plan.md` - 実装プラン（設計方針・ステップ・技術的判断の経緯）

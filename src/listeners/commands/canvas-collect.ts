@@ -6,6 +6,8 @@ import { buildMarkdown, buildAppendMarkdown } from '../../services/markdown-buil
 import { upsertCanvas } from '../../services/canvas-manager';
 import { lockManager } from '../../services/lock-manager';
 import { AppError } from '../../types';
+import { getUserLocale, t } from '../../i18n';
+import type { SupportedLocale, MessageKey } from '../../i18n';
 import {
   buildCollectingBlocks,
   buildCompletionBlocks,
@@ -24,6 +26,9 @@ export function registerCanvasCollectCommand(app: App): void {
     const teamId = command.team_id;
     const teamDomain = command.team_domain;
 
+    // ユーザーのlocaleを取得
+    const locale: SupportedLocale = await getUserLocale(client, userId);
+
     // エフェメラルメッセージ送信ヘルパー
     const sendEphemeral = async (text: string, blocks?: KnownBlock[]) => {
       await client.chat.postEphemeral({
@@ -38,7 +43,7 @@ export function registerCanvasCollectCommand(app: App): void {
 
     try {
       // 2. コマンドパース → バリデーション
-      const parsed = parseCommand(command.text ?? '');
+      const parsed = parseCommand(command.text ?? '', locale);
       emoji = parsed.emoji;
 
       // チャンネル名からIDを解決
@@ -47,7 +52,8 @@ export function registerCanvasCollectCommand(app: App): void {
         const { resolved, notFound } = await resolveChannelNames(client, parsed.channelNames);
         resolvedChannelIds = resolved;
         if (notFound.length > 0) {
-          const msg = `❌ チャンネル ${notFound.map(n => `#${n}`).join(', ')} が見つかりません`;
+          const channels = notFound.map(n => `#${n}`).join(', ');
+          const msg = t(locale, 'error.channelNotFound', { channels });
           await sendEphemeral(msg, buildErrorBlocks(msg));
           return;
         }
@@ -59,15 +65,15 @@ export function registerCanvasCollectCommand(app: App): void {
 
       // 4. 収集中メッセージ送信
       await sendEphemeral(
-        `🐿️ ${channelIds.length}チャンネルから :${emoji}: を収集中...`,
-        buildCollectingBlocks(emoji, channelIds.length),
+        t(locale, 'collecting.fallback', { channelCount: channelIds.length, emoji }),
+        buildCollectingBlocks(locale, emoji, channelIds.length),
       );
 
       // 5. ロック取得
       if (!lockManager.acquire(emoji)) {
         await sendEphemeral(
-          `⏳ 現在 :${emoji}: の収集が実行中です`,
-          buildLockConflictBlocks(emoji),
+          t(locale, 'lock.conflictFallback', { emoji }),
+          buildLockConflictBlocks(locale, emoji),
         );
         return;
       }
@@ -79,8 +85,8 @@ export function registerCanvasCollectCommand(app: App): void {
         // 該当なし
         if (result.messages.length === 0) {
           await sendEphemeral(
-            'ℹ️ 該当するメッセージが見つかりませんでした',
-            buildNoResultBlocks(result.skippedChannels),
+            t(locale, 'noResult.fallback'),
+            buildNoResultBlocks(locale, result.skippedChannels),
           );
           return;
         }
@@ -91,8 +97,8 @@ export function registerCanvasCollectCommand(app: App): void {
           .map(([chId]) => chId);
 
         // 7. Canvas検索 → 作成 or 追記
-        const newMarkdown = buildMarkdown(emoji, result.messages, channelIds.length);
-        const appendMarkdown = buildAppendMarkdown(emoji, result.messages, channelIds.length);
+        const newMarkdown = buildMarkdown(locale, emoji, result.messages, channelIds.length);
+        const appendMarkdown = buildAppendMarkdown(locale, emoji, result.messages, channelIds.length);
 
         const { canvasUrl, isNew } = await upsertCanvas(
           client,
@@ -105,10 +111,9 @@ export function registerCanvasCollectCommand(app: App): void {
         );
 
         // 8. 完了通知
-        const completionText = `✅ ${result.messages.length}件のメッセージを収集しました 📄 Canvas: ${canvasUrl}`;
         await sendEphemeral(
-          completionText,
-          buildCompletionBlocks(emoji, result.messages.length, canvasUrl, {
+          t(locale, 'completion.fallback', { count: result.messages.length, canvasUrl }),
+          buildCompletionBlocks(locale, emoji, result.messages.length, canvasUrl, {
             limitReachedChannels: limitReachedChannels.length > 0 ? limitReachedChannels : undefined,
             skippedChannels: result.skippedChannels.length > 0 ? result.skippedChannels : undefined,
           }),
@@ -122,9 +127,16 @@ export function registerCanvasCollectCommand(app: App): void {
     } catch (error) {
       // エラーハンドリング
       if (error instanceof AppError) {
-        await sendEphemeral(error.message, buildErrorBlocks(error.message));
+        // messageKeyがあれば翻訳、なければそのまま（command-parserは翻訳済み）
+        let msg = error.message;
+        if (error.messageKey) {
+          const params: Record<string, string> = {};
+          if (error.detail) params.code = error.detail;
+          msg = t(locale, error.messageKey as MessageKey, params);
+        }
+        await sendEphemeral(msg, buildErrorBlocks(msg));
       } else {
-        const msg = '❌ 予期しないエラーが発生しました\nしばらく待ってから再度お試しください';
+        const msg = t(locale, 'error.genericFallback');
         await sendEphemeral(msg, buildErrorBlocks(msg));
       }
     }

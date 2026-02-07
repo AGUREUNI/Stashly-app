@@ -238,6 +238,77 @@ MVP（最初にやること）:
 4. 完了通知のCanvasリンクからSlackアプリ内で直接Canvas遷移 ✅
 5. Canvas内の `:link:` 絵文字とチャンネル数が正しく表示 ✅
 
+## フェーズ4.5: 文言調整 + 多言語対応（i18n） ✅ 完了
+
+テスト・リリース前に文言を固めるフェーズ。全ユーザー向け文字列（約34キー）を7言語対応に拡張。
+
+### 対応言語
+ja（日本語）, en（英語）, hi（ヒンディー語）, fr（フランス語）, es（スペイン語）, zh（中国語）, ko（韓国語）
+
+### 設計方針
+
+| 項目 | 方針 |
+|------|------|
+| 言語検出 | `users.info` API（`include_locale: true`）+ 30分インメモリキャッシュ |
+| Canvas タイトル | **英語固定**: `:emoji: Collection Log`（検索整合性のため） |
+| Canvas Markdownコンテンツ | ユーザーlocaleでローカライズ |
+| エフェメラルメッセージ | ユーザーlocaleでローカライズ |
+| i18nライブラリ | 外部ライブラリ不使用（自作 `{{variable}}` プレースホルダー方式） |
+| 型安全 | `Messages` interfaceで全localeファイルのキー漏れをコンパイル時検出 |
+
+### コマンド構文の多言語化
+
+期間指定を全7言語でパース可能にした。全パターンを1つの正規表現で一括マッチ。
+
+| 言語 | 入力例 |
+|------|--------|
+| ja | `過去7日` |
+| en | `last 7 days` |
+| hi | `पिछले 7 दिन` |
+| fr | `derniers 7 jours` |
+| es | `últimos 7 días` |
+| zh | `过去7天` |
+| ko | `최근 7일` |
+
+### エラー伝播パターン
+
+- `slack-api.ts`: エラーに `messageKey`（i18nキー）を `AppError` に格納 → catch側で `t(locale, key)` で翻訳
+- `command-parser.ts`: `locale` 引数を受け取り、throw時に翻訳済みメッセージをセット
+
+### 新規作成ファイル
+
+| ファイル | 内容 |
+|---------|------|
+| `src/i18n/types.ts` | `Messages` interface（34キー）+ `SupportedLocale` 型 |
+| `src/i18n/index.ts` | `t()` 翻訳関数, `getUserLocale()`, `resolveLocale()` |
+| `src/i18n/locales/ja.ts` | 日本語 |
+| `src/i18n/locales/en.ts` | 英語 |
+| `src/i18n/locales/hi.ts` | ヒンディー語 |
+| `src/i18n/locales/fr.ts` | フランス語 |
+| `src/i18n/locales/es.ts` | スペイン語 |
+| `src/i18n/locales/zh.ts` | 中国語 |
+| `src/i18n/locales/ko.ts` | 韓国語 |
+
+### 修正ファイル
+
+| ファイル | 変更内容 |
+|---------|---------|
+| `src/types/index.ts` | `AppError` に `messageKey` フィールド追加 |
+| `src/services/slack-api.ts` | `classifyError` で各エラーに `messageKey` を付与 |
+| `src/services/command-parser.ts` | `locale` 引数追加 + 7言語期間パターン対応 |
+| `src/services/block-builder.ts` | 全関数に `locale` 追加、`t()` で翻訳 |
+| `src/services/markdown-builder.ts` | `locale` 追加、ヘッダー・ラベル・リンクテキスト翻訳 |
+| `src/services/canvas-manager.ts` | タイトルを英語固定 `:emoji: Collection Log` |
+| `src/listeners/commands/canvas-collect.ts` | `getUserLocale()` 呼び出し + 全サービスに `locale` 伝播 |
+
+### 追加スコープ
+- `users:read`（locale取得に必要）
+
+### 検証
+- `npm run build` エラーなし ✅
+
+---
+
 ## 実装中の発見・修正事項
 
 ### Canvas API: h4非対応

@@ -1,16 +1,18 @@
 import type { KnownBlock } from '@slack/types';
 import { ChannelInfo } from '../types';
+import { t } from '../i18n';
+import type { SupportedLocale } from '../i18n';
 
 /**
  * 収集中メッセージのBlock Kit
  */
-export function buildCollectingBlocks(emoji: string, channelCount: number): KnownBlock[] {
+export function buildCollectingBlocks(locale: SupportedLocale, emoji: string, channelCount: number): KnownBlock[] {
   return [
     {
       type: 'section',
       text: {
         type: 'mrkdwn',
-        text: `🐿️ *${channelCount}チャンネル* から :${emoji}: を収集中... しばらくお待ちください`,
+        text: t(locale, 'collecting.blocks', { emoji, channelCount }),
       },
     },
   ];
@@ -20,6 +22,7 @@ export function buildCollectingBlocks(emoji: string, channelCount: number): Know
  * 完了通知のBlock Kit
  */
 export function buildCompletionBlocks(
+  locale: SupportedLocale,
   emoji: string,
   count: number,
   canvasUrl: string,
@@ -28,12 +31,14 @@ export function buildCompletionBlocks(
     skippedChannels?: ChannelInfo[];
   },
 ): KnownBlock[] {
+  const periodExample = t(locale, 'command.periodExample');
+
   const blocks: KnownBlock[] = [
     {
       type: 'header',
       text: {
         type: 'plain_text',
-        text: '収集完了',
+        text: t(locale, 'completion.header'),
         emoji: true,
       },
     },
@@ -41,7 +46,7 @@ export function buildCompletionBlocks(
       type: 'section',
       text: {
         type: 'mrkdwn',
-        text: `✅ *${count}件* のメッセージを収集しました\n\n📄 <${canvasUrl}|Canvasを確認>`,
+        text: t(locale, 'completion.body', { count, canvasUrl }),
       },
     },
   ];
@@ -52,7 +57,7 @@ export function buildCompletionBlocks(
       type: 'section',
       text: {
         type: 'mrkdwn',
-        text: `⚠️ 500件以上のメッセージが見つかりました\n期間を絞って再実行してください\n例: \`/canvas-collect :${emoji}: 過去7日\``,
+        text: t(locale, 'completion.limitWarning', { emoji, periodExample }),
       },
     });
   }
@@ -65,7 +70,7 @@ export function buildCompletionBlocks(
       elements: [
         {
           type: 'mrkdwn',
-          text: `⚠️ Botが未参加のためスキップ: ${chList}`,
+          text: t(locale, 'completion.skippedChannels', { channels: chList }),
         },
       ],
     });
@@ -79,7 +84,7 @@ export function buildCompletionBlocks(
       elements: [
         {
           type: 'mrkdwn',
-          text: `💡 ヒント: 重複を避けるには期間指定がおすすめ！ 例: \`/canvas-collect :${emoji}: 過去7日\``,
+          text: t(locale, 'completion.hint', { emoji, periodExample }),
         },
       ],
     },
@@ -91,13 +96,13 @@ export function buildCompletionBlocks(
 /**
  * 該当なしメッセージのBlock Kit
  */
-export function buildNoResultBlocks(skippedChannels?: ChannelInfo[]): KnownBlock[] {
+export function buildNoResultBlocks(locale: SupportedLocale, skippedChannels?: ChannelInfo[]): KnownBlock[] {
   const blocks: KnownBlock[] = [
     {
       type: 'section',
       text: {
         type: 'mrkdwn',
-        text: 'ℹ️ 該当するメッセージが見つかりませんでした',
+        text: t(locale, 'noResult.message'),
       },
     },
   ];
@@ -109,7 +114,7 @@ export function buildNoResultBlocks(skippedChannels?: ChannelInfo[]): KnownBlock
       elements: [
         {
           type: 'mrkdwn',
-          text: `⚠️ Botが未参加のためスキップ: ${chList}`,
+          text: t(locale, 'completion.skippedChannels', { channels: chList }),
         },
       ],
     });
@@ -136,13 +141,13 @@ export function buildErrorBlocks(message: string): KnownBlock[] {
 /**
  * ロック競合メッセージのBlock Kit
  */
-export function buildLockConflictBlocks(emoji: string): KnownBlock[] {
+export function buildLockConflictBlocks(locale: SupportedLocale, emoji: string): KnownBlock[] {
   return [
     {
       type: 'section',
       text: {
         type: 'mrkdwn',
-        text: `⏳ 現在 :${emoji}: の収集が実行中です\nしばらく待ってから再度お試しください`,
+        text: t(locale, 'lock.conflict', { emoji }),
       },
     },
   ];

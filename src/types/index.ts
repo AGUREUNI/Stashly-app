@@ -64,6 +64,7 @@ export class AppError extends Error {
     public readonly kind: ErrorKind,
     message: string,
     public readonly detail?: string,
+    public readonly messageKey?: string,
   ) {
     super(message);
     this.name = 'AppError';

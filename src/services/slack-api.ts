@@ -28,18 +28,18 @@ function classifyError(error: unknown): AppError {
 
   if (FATAL_ERRORS.has(code)) {
     if (code === 'missing_scope') {
-      return new AppError('FATAL_API_ERROR', '❌ アプリの権限が不足しています\n管理者に再インストールを依頼してください', code);
+      return new AppError('FATAL_API_ERROR', '❌ アプリの権限が不足しています\n管理者に再インストールを依頼してください', code, 'error.missingScope');
     }
     if (code === 'token_revoked' || code === 'not_authed' || code === 'account_inactive') {
-      return new AppError('FATAL_API_ERROR', '❌ アプリの認証が無効です\n管理者に再インストールを依頼してください', code);
+      return new AppError('FATAL_API_ERROR', '❌ アプリの認証が無効です\n管理者に再インストールを依頼してください', code, 'error.authInvalid');
     }
     if (code === 'invalid_auth') {
-      return new AppError('FATAL_API_ERROR', '❌ 認証エラーが発生しました\n管理者にお問い合わせください', code);
+      return new AppError('FATAL_API_ERROR', '❌ 認証エラーが発生しました\n管理者にお問い合わせください', code, 'error.authError');
     }
   }
 
   if (code === 'ratelimited') {
-    return new AppError('RATE_LIMITED', '⏳ 処理が混み合っています\nしばらく待ってから再度お試しください', code);
+    return new AppError('RATE_LIMITED', '⏳ 処理が混み合っています\nしばらく待ってから再度お試しください', code, 'error.rateLimited');
   }
 
   if (code === 'not_in_channel') {
@@ -47,18 +47,18 @@ function classifyError(error: unknown): AppError {
   }
 
   if (code === 'channel_not_found') {
-    return new AppError('PARSE_ERROR', '❌ 指定されたチャンネルが見つかりません', code);
+    return new AppError('PARSE_ERROR', '❌ 指定されたチャンネルが見つかりません', code, 'error.channelNotFoundApi');
   }
 
   if (code === 'canvas_editing_failed') {
-    return new AppError('CANVAS_EDIT_FAILED', '❌ Canvasの編集権限がありません\nチャンネル管理者に権限を確認してください', code);
+    return new AppError('CANVAS_EDIT_FAILED', '❌ Canvasの編集権限がありません\nチャンネル管理者に権限を確認してください', code, 'error.canvasEditFailed');
   }
 
   if (code === 'canvas_creation_failed') {
-    return new AppError('CANVAS_CREATE_FAILED', '❌ Canvasの作成に失敗しました\nしばらく待ってから再度お試しください', code);
+    return new AppError('CANVAS_CREATE_FAILED', '❌ Canvasの作成に失敗しました\nしばらく待ってから再度お試しください', code, 'error.canvasCreateFailed');
   }
 
-  return new AppError('UNKNOWN', `❌ 予期しないエラーが発生しました: ${code || '不明'}`, code);
+  return new AppError('UNKNOWN', `❌ 予期しないエラーが発生しました: ${code || '不明'}`, code, 'error.unknown');
 }
 
 /**

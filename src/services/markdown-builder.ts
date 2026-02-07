@@ -1,5 +1,7 @@
 import { CollectedMessage } from '../types';
 import { slackTsToDate, formatDateUTC, formatDateOnlyUTC } from '../utils/date';
+import { t } from '../i18n';
+import type { SupportedLocale } from '../i18n';
 
 /**
  * 収集結果をCanvas用Markdownに変換する
@@ -13,16 +15,16 @@ import { slackTsToDate, formatDateUTC, formatDateOnlyUTC } from '../utils/date';
  * **2026-02-04**
  * - 09:20 (UTC) [メッセージを見る](https://...)
  */
-export function buildMarkdown(emoji: string, messages: CollectedMessage[], channelCount?: number): string {
+export function buildMarkdown(locale: SupportedLocale, emoji: string, messages: CollectedMessage[], channelCount?: number): string {
   const now = new Date();
   const lines: string[] = [];
 
   // ヘッダー
-  lines.push(`## :${emoji}: 収集結果`);
-  lines.push(`最終更新: ${formatDateUTC(now)}`);
-  lines.push(`収集件数: ${messages.length}件`);
+  lines.push(`## ${t(locale, 'markdown.heading', { emoji })}`);
+  lines.push(t(locale, 'markdown.lastUpdated', { datetime: formatDateUTC(now) }));
+  lines.push(t(locale, 'markdown.messageCount', { count: messages.length }));
   if (channelCount !== undefined) {
-    lines.push(`対象チャンネル: ${channelCount}`);
+    lines.push(t(locale, 'markdown.targetChannels', { count: channelCount }));
   }
   lines.push('');
 
@@ -42,9 +44,9 @@ export function buildMarkdown(emoji: string, messages: CollectedMessage[], chann
         const timeStr = `${h}:${m} (UTC)`;
 
         if (msg.permalink) {
-          lines.push(`- ${timeStr} [:link: メッセージを見る](${msg.permalink})`);
+          lines.push(`- ${timeStr} [${t(locale, 'markdown.viewMessage')}](${msg.permalink})`);
         } else {
-          lines.push(`- ${timeStr} (リンク取得失敗)`);
+          lines.push(`- ${timeStr} ${t(locale, 'markdown.linkFailed')}`);
         }
       }
 
@@ -59,12 +61,12 @@ export function buildMarkdown(emoji: string, messages: CollectedMessage[], chann
  * 追記用のMarkdownを生成（新規セクション）
  * 既存Canvasに追記する際は、区切り線の後にコンテンツを追加
  */
-export function buildAppendMarkdown(emoji: string, messages: CollectedMessage[], channelCount?: number): string {
+export function buildAppendMarkdown(locale: SupportedLocale, emoji: string, messages: CollectedMessage[], channelCount?: number): string {
   const lines: string[] = [];
 
   lines.push('---');
   lines.push('');
-  lines.push(buildMarkdown(emoji, messages, channelCount));
+  lines.push(buildMarkdown(locale, emoji, messages, channelCount));
 
   return lines.join('\n');
 }

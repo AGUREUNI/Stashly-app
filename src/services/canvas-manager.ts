@@ -4,10 +4,10 @@ import { callWithRetry } from './slack-api';
 
 /**
  * Canvasタイトルを生成
- * 形式: ":emoji: 収集ログ"
+ * 形式: ":emoji: Collection Log"（全言語共通・英語固定）
  */
 export function getCanvasTitle(emoji: string): string {
-  return `:${emoji}: 収集ログ`;
+  return `:${emoji}: Collection Log`;
 }
 
 /**

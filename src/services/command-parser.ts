@@ -1,4 +1,6 @@
 import { ParsedCommand, AppError } from '../types';
+import { t } from '../i18n';
+import type { SupportedLocale } from '../i18n';
 
 /** チャンネル参照パターン（Slack自動変換）: <#C1234|channel-name> */
 const LINKED_CHANNEL_PATTERN = /<#(C[A-Z0-9]+)\|[^>]*>/g;
@@ -9,8 +11,24 @@ const PLAIN_CHANNEL_PATTERN = /#([\w-]+)/g;
 /** 絵文字パターン: :emoji_name: */
 const EMOJI_PATTERN = /^:([^:\s]+):$/;
 
-/** 期間パターン: 過去○日 */
-const PERIOD_PATTERN = /過去(\d+)日/g;
+/**
+ * 多言語対応の期間パターン（全7言語を1つの正規表現で一括マッチ）
+ * ja: 過去7日 / en: last 7 days / hi: पिछले 7 दिन / fr: derniers 7 jours
+ * es: últimos 7 días / zh: 过去7天 / ko: 최근 7일
+ */
+const PERIOD_PATTERN = /過去(\d+)日|last\s+(\d+)\s+days|पिछले\s+(\d+)\s+दिन|derniers\s+(\d+)\s+jours|últimos\s+(\d+)\s+días|过去(\d+)天|최근\s+(\d+)일/gi;
+
+/**
+ * マッチ結果から数値を抽出（どのキャプチャグループにヒットしても取得できる）
+ */
+function extractPeriodDays(match: RegExpExecArray): number {
+  for (let i = 1; i < match.length; i++) {
+    if (match[i] !== undefined) {
+      return parseInt(match[i], 10);
+    }
+  }
+  return 0;
+}
 
 /**
  * /canvas-collect コマンドの引数をパースする
@@ -20,12 +38,13 @@ const PERIOD_PATTERN = /過去(\d+)日/g;
  *   ":check: <#C1234|marketing> <#C5678|sales>"
  *   ":check: #marketing #sales"
  *   ":check: 過去7日"
+ *   ":check: last 7 days"
  */
-export function parseCommand(text: string): ParsedCommand {
+export function parseCommand(text: string, locale: SupportedLocale): ParsedCommand {
   const trimmed = text.trim();
 
   if (!trimmed) {
-    throw new AppError('NO_EMOJI', '絵文字を指定してください\n例: `/canvas-collect :thumbsup:`');
+    throw new AppError('NO_EMOJI', t(locale, 'error.noEmoji'));
   }
 
   // トークンに分割
@@ -36,7 +55,7 @@ export function parseCommand(text: string): ParsedCommand {
   if (!emojiMatch) {
     throw new AppError(
       'PARSE_ERROR',
-      `\`${tokens[0]}\` は有効な絵文字ではありません\n絵文字は \`:emoji:\` の形式で指定してください`,
+      t(locale, 'error.invalidEmoji', { token: tokens[0] }),
     );
   }
   const emoji = emojiMatch[1];
@@ -55,8 +74,8 @@ export function parseCommand(text: string): ParsedCommand {
 
   // 自動変換が1つもなかった場合、プレーンテキスト #name を試す
   if (channels.length === 0) {
-    // 期間パターンを除外した上でプレーンチャンネルをチェック
-    const withoutPeriod = remaining.replace(/過去\d+日/g, '');
+    // 多言語期間パターンを除外した上でプレーンチャンネルをチェック
+    const withoutPeriod = remaining.replace(PERIOD_PATTERN, '');
     const plainRegex = new RegExp(PLAIN_CHANNEL_PATTERN.source, 'g');
     let plainMatch;
     while ((plainMatch = plainRegex.exec(withoutPeriod)) !== null) {
@@ -69,26 +88,26 @@ export function parseCommand(text: string): ParsedCommand {
   if (totalChannels > 9) {
     throw new AppError(
       'PARSE_ERROR',
-      'チャンネル指定は最大9個までです（実行チャンネルを含めて10個）',
+      t(locale, 'error.tooManyChannels'),
     );
   }
 
-  // 3. 期間を抽出
-  const periodRegex = new RegExp(PERIOD_PATTERN.source, 'g');
+  // 3. 期間を抽出（多言語対応）
+  const periodRegex = new RegExp(PERIOD_PATTERN.source, PERIOD_PATTERN.flags);
   const periods: number[] = [];
   let periodMatch;
   while ((periodMatch = periodRegex.exec(remaining)) !== null) {
-    periods.push(parseInt(periodMatch[1], 10));
+    periods.push(extractPeriodDays(periodMatch));
   }
 
   if (periods.length > 1) {
-    throw new AppError('MULTIPLE_PERIODS', '❌ 期間指定は1つまでです');
+    throw new AppError('MULTIPLE_PERIODS', t(locale, 'error.multiplePeriods'));
   }
 
   const periodDays = periods.length === 1 ? periods[0] : null;
 
   if (periodDays !== null && periodDays <= 0) {
-    throw new AppError('PARSE_ERROR', '期間は1日以上で指定してください');
+    throw new AppError('PARSE_ERROR', t(locale, 'error.invalidPeriod'));
   }
 
   return { emoji, channels, channelNames, periodDays };
