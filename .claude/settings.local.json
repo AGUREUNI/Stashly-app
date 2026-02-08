@@ -6,7 +6,8 @@
       "Bash(tasklist:*)",
       "Bash(taskkill:*)",
       "Bash(npm run build:*)",
-      "Bash(node dist/app.js:*)"
+      "Bash(node dist/app.js:*)",
+      "Bash(npx vitest run:*)"
     ]
   }
 }

@@ -79,6 +79,11 @@ export async function getUserLocale(client: WebClient, userId: string): Promise<
 /**
  * Slack locale文字列（例: "en-US", "ja-JP"）を SupportedLocale に変換
  */
+/** テスト用: localeキャッシュをクリア */
+export function _clearLocaleCacheForTest(): void {
+  localeCache.clear();
+}
+
 export function resolveLocale(slackLocale: string): SupportedLocale {
   if (!slackLocale) return DEFAULT_LOCALE;
 

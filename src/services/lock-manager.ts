@@ -34,6 +34,11 @@ class LockManager {
     this.locks.delete(emoji);
   }
 
+  /** テスト用: 全ロックをクリア */
+  _clearForTest(): void {
+    this.locks.clear();
+  }
+
   /**
    * TTL切れのロックをクリーンアップ
    */
