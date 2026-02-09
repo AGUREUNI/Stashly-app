@@ -110,6 +110,6 @@ describe('buildLockConflictBlocks', () => {
   it('should render English locale', () => {
     const blocks = buildLockConflictBlocks('en', 'heart');
     expect((blocks[0] as any).text.text).toContain(':heart:');
-    expect((blocks[0] as any).text.text).toContain('already in progress');
+    expect((blocks[0] as any).text.text).toContain('already gathering');
   });
 });

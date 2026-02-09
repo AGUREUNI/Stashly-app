@@ -2,12 +2,12 @@ import type { Messages } from '../types';
 
 const es: Messages = {
   // Block Kit: Recopilando
-  'collecting.blocks': '🐿️ Recopilando :{{emoji}}: de *{{channelCount}} canales*... Por favor espere',
-  'collecting.fallback': '🐿️ Recopilando :{{emoji}}: de {{channelCount}} canales...',
+  'collecting.blocks': '🐿️ Recopilando bellotas :{{emoji}}: de *{{channelCount}} canales*... Por favor espere',
+  'collecting.fallback': '🐿️ Recopilando bellotas :{{emoji}}: de {{channelCount}} canales...',
   // Block Kit: Completado
   'completion.header': 'Recopilación completa',
-  'completion.body': '✅ Se recopilaron *{{count}}* mensajes\n\n📄 <{{canvasUrl}}|Ver Canvas>',
-  'completion.fallback': '✅ Se recopilaron {{count}} mensajes 📄 Canvas: {{canvasUrl}}',
+  'completion.body': '✅ Se recopilaron *{{count}}* bellotas\n\n📄 <{{canvasUrl}}|Ver Canvas>',
+  'completion.fallback': '✅ Se recopilaron {{count}} bellotas 📄 Canvas: {{canvasUrl}}',
   'completion.limitWarning': '⚠️ Se encontraron más de 500 mensajes\nPor favor reduzca el período e intente de nuevo\nEjemplo: `/canvas-collect :{{emoji}}: {{periodExample}}`',
   'completion.skippedChannels': '⚠️ Omitidos (Bot no es miembro): {{channels}}',
   'completion.hint': '💡 Consejo: ¡Use un filtro de período para evitar duplicados! Ejemplo: `/canvas-collect :{{emoji}}: {{periodExample}}`',
@@ -15,8 +15,8 @@ const es: Messages = {
   'noResult.message': 'ℹ️ No se encontraron mensajes coincidentes',
   'noResult.fallback': 'No se encontraron mensajes coincidentes',
   // Block Kit: Conflicto de bloqueo
-  'lock.conflict': '⏳ La recopilación de :{{emoji}}: ya está en progreso\nPor favor espere e intente de nuevo',
-  'lock.conflictFallback': '⏳ La recopilación de :{{emoji}}: ya está en progreso',
+  'lock.conflict': '⏳ Una ardilla ya está recopilando bellotas :{{emoji}}:\nPor favor espere e intente de nuevo',
+  'lock.conflictFallback': '⏳ Ya se están recopilando bellotas :{{emoji}}:',
   // Errores del parser
   'error.noEmoji': 'Por favor especifique un emoji\nEjemplo: `/canvas-collect :thumbsup:`',
   'error.invalidEmoji': '`{{token}}` no es un emoji válido\nPor favor use el formato `:emoji:`',
@@ -30,7 +30,7 @@ const es: Messages = {
   'error.missingScope': '❌ La aplicación no tiene los permisos necesarios\nPor favor pida a un administrador que reinstale',
   'error.authInvalid': '❌ La autenticación de la aplicación no es válida\nPor favor pida a un administrador que reinstale',
   'error.authError': '❌ Ocurrió un error de autenticación\nPor favor contacte a un administrador',
-  'error.rateLimited': '⏳ Demasiadas solicitudes\nPor favor espere e intente de nuevo',
+  'error.rateLimited': '⏳ Las ardillas están ocupadas\nPor favor espere e intente de nuevo',
   'error.channelNotFoundApi': '❌ El canal especificado no fue encontrado',
   'error.canvasEditFailed': '❌ Sin permiso para editar el Canvas\nPor favor verifique los permisos con el administrador del canal',
   'error.canvasCreateFailed': '❌ Error al crear el Canvas\nPor favor espere e intente de nuevo',
@@ -39,7 +39,7 @@ const es: Messages = {
   // Canvas
   'canvas.title': ':{{emoji}}: Collection Log',
   // Markdown
-  'markdown.heading': ':{{emoji}}: Resultados de la recopilación',
+  'markdown.heading': ':{{emoji}}: Resultados de la recopilación de bellotas',
   'markdown.lastUpdated': 'Última actualización: {{datetime}}',
   'markdown.messageCount': 'Mensajes recopilados: {{count}}',
   'markdown.targetChannels': 'Canales objetivo: {{count}}',

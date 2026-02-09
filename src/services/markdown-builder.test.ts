@@ -29,12 +29,12 @@ describe('buildMarkdown', () => {
 
   it('should include heading with emoji (ja)', () => {
     const md = buildMarkdown('ja', 'thumbsup', sampleMessages);
-    expect(md).toContain('## :thumbsup: 収集結果');
+    expect(md).toContain('## :thumbsup: どんぐり収集結果');
   });
 
   it('should include heading with emoji (en)', () => {
     const md = buildMarkdown('en', 'thumbsup', sampleMessages);
-    expect(md).toContain('## :thumbsup: Collection Results');
+    expect(md).toContain('## :thumbsup: Acorn Collection Results');
   });
 
   it('should include last updated datetime', () => {
@@ -89,7 +89,7 @@ describe('buildMarkdown', () => {
 
   it('should return empty group section for no messages', () => {
     const md = buildMarkdown('ja', 'thumbsup', []);
-    expect(md).toContain('## :thumbsup: 収集結果');
+    expect(md).toContain('## :thumbsup: どんぐり収集結果');
     expect(md).toContain('0');
   });
 });
@@ -114,6 +114,6 @@ describe('buildAppendMarkdown', () => {
       { ts: '1738745400.000000', channelId: 'C1', channelName: 'general', permalink: 'https://link1' },
     ];
     const md = buildAppendMarkdown('ja', 'thumbsup', msgs);
-    expect(md).toContain('## :thumbsup: 収集結果');
+    expect(md).toContain('## :thumbsup: どんぐり収集結果');
   });
 });

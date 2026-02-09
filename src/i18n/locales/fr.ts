@@ -2,12 +2,12 @@ import type { Messages } from '../types';
 
 const fr: Messages = {
   // Block Kit: Collecte en cours
-  'collecting.blocks': '🐿️ Collecte de :{{emoji}}: dans *{{channelCount}} canaux*... Veuillez patienter',
-  'collecting.fallback': '🐿️ Collecte de :{{emoji}}: dans {{channelCount}} canaux...',
+  'collecting.blocks': '🐿️ Collecte de glands :{{emoji}}: dans *{{channelCount}} canaux*... Veuillez patienter',
+  'collecting.fallback': '🐿️ Collecte de glands :{{emoji}}: dans {{channelCount}} canaux...',
   // Block Kit: Terminé
   'completion.header': 'Collecte terminée',
-  'completion.body': '✅ *{{count}}* messages collectés\n\n📄 <{{canvasUrl}}|Voir le Canvas>',
-  'completion.fallback': '✅ {{count}} messages collectés 📄 Canvas : {{canvasUrl}}',
+  'completion.body': '✅ *{{count}}* glands collectés\n\n📄 <{{canvasUrl}}|Voir le Canvas>',
+  'completion.fallback': '✅ {{count}} glands collectés 📄 Canvas : {{canvasUrl}}',
   'completion.limitWarning': '⚠️ Plus de 500 messages trouvés\nVeuillez réduire la période et réessayer\nExemple : `/canvas-collect :{{emoji}}: {{periodExample}}`',
   'completion.skippedChannels': '⚠️ Ignorés (Bot non membre) : {{channels}}',
   'completion.hint': '💡 Astuce : Utilisez un filtre de période pour éviter les doublons ! Exemple : `/canvas-collect :{{emoji}}: {{periodExample}}`',
@@ -15,8 +15,8 @@ const fr: Messages = {
   'noResult.message': 'ℹ️ Aucun message correspondant trouvé',
   'noResult.fallback': 'Aucun message correspondant trouvé',
   // Block Kit: Conflit de verrou
-  'lock.conflict': '⏳ La collecte de :{{emoji}}: est déjà en cours\nVeuillez patienter et réessayer',
-  'lock.conflictFallback': '⏳ La collecte de :{{emoji}}: est déjà en cours',
+  'lock.conflict': '⏳ Un écureuil collecte déjà les glands :{{emoji}}:\nVeuillez patienter et réessayer',
+  'lock.conflictFallback': '⏳ Collecte de glands :{{emoji}}: déjà en cours',
   // Erreurs du parseur
   'error.noEmoji': 'Veuillez spécifier un emoji\nExemple : `/canvas-collect :thumbsup:`',
   'error.invalidEmoji': '`{{token}}` n\'est pas un emoji valide\nVeuillez utiliser le format `:emoji:`',
@@ -30,7 +30,7 @@ const fr: Messages = {
   'error.missingScope': '❌ L\'application manque de permissions\nVeuillez demander à un administrateur de réinstaller',
   'error.authInvalid': '❌ L\'authentification de l\'application est invalide\nVeuillez demander à un administrateur de réinstaller',
   'error.authError': '❌ Une erreur d\'authentification s\'est produite\nVeuillez contacter un administrateur',
-  'error.rateLimited': '⏳ Trop de requêtes\nVeuillez patienter et réessayer',
+  'error.rateLimited': '⏳ Les écureuils sont occupés\nVeuillez patienter et réessayer',
   'error.channelNotFoundApi': '❌ Le canal spécifié est introuvable',
   'error.canvasEditFailed': '❌ Pas de permission pour modifier le Canvas\nVeuillez vérifier les permissions avec l\'administrateur du canal',
   'error.canvasCreateFailed': '❌ Échec de la création du Canvas\nVeuillez patienter et réessayer',
@@ -39,7 +39,7 @@ const fr: Messages = {
   // Canvas
   'canvas.title': ':{{emoji}}: Collection Log',
   // Markdown
-  'markdown.heading': ':{{emoji}}: Résultats de la collecte',
+  'markdown.heading': ':{{emoji}}: Résultats de la collecte de glands',
   'markdown.lastUpdated': 'Dernière mise à jour : {{datetime}}',
   'markdown.messageCount': 'Messages collectés : {{count}}',
   'markdown.targetChannels': 'Canaux ciblés : {{count}}',

@@ -225,7 +225,7 @@ describe('handleCanvasCollect 統合テスト', () => {
     expect(client.chat.postEphemeral).toHaveBeenCalledTimes(2);
     const lockCall = client.chat.postEphemeral.mock.calls[1][0];
     expect(lockCall.text).toContain('thumbsup');
-    expect(lockCall.text).toContain('already in progress');
+    expect(lockCall.text).toContain('gathering');
 
     // 収集・Canvas操作は行われない
     expect(client.canvases.create).not.toHaveBeenCalled();

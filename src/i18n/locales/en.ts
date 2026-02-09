@@ -2,12 +2,12 @@ import type { Messages } from '../types';
 
 const en: Messages = {
   // Block Kit: Collecting
-  'collecting.blocks': '🐿️ Collecting :{{emoji}}: from *{{channelCount}} channels*... Please wait',
-  'collecting.fallback': '🐿️ Collecting :{{emoji}}: from {{channelCount}} channels...',
+  'collecting.blocks': '🐿️ Gathering :{{emoji}}: acorns from *{{channelCount}} channels*... Please wait',
+  'collecting.fallback': '🐿️ Gathering :{{emoji}}: acorns from {{channelCount}} channels...',
   // Block Kit: Completion
   'completion.header': 'Collection Complete',
-  'completion.body': '✅ Collected *{{count}}* messages\n\n📄 <{{canvasUrl}}|View Canvas>',
-  'completion.fallback': '✅ Collected {{count}} messages 📄 Canvas: {{canvasUrl}}',
+  'completion.body': '✅ Collected *{{count}}* acorns\n\n📄 <{{canvasUrl}}|View Canvas>',
+  'completion.fallback': '✅ Collected {{count}} acorns 📄 Canvas: {{canvasUrl}}',
   'completion.limitWarning': '⚠️ More than 500 messages were found\nPlease narrow the period and try again\nExample: `/canvas-collect :{{emoji}}: {{periodExample}}`',
   'completion.skippedChannels': '⚠️ Skipped (Bot not a member): {{channels}}',
   'completion.hint': '💡 Tip: Use a period filter to avoid duplicates! Example: `/canvas-collect :{{emoji}}: {{periodExample}}`',
@@ -15,8 +15,8 @@ const en: Messages = {
   'noResult.message': 'ℹ️ No matching messages found',
   'noResult.fallback': 'No matching messages found',
   // Block Kit: Lock conflict
-  'lock.conflict': '⏳ Collection for :{{emoji}}: is already in progress\nPlease wait and try again',
-  'lock.conflictFallback': '⏳ Collection for :{{emoji}}: is already in progress',
+  'lock.conflict': '⏳ A squirrel is already gathering :{{emoji}}: acorns\nPlease wait and try again',
+  'lock.conflictFallback': '⏳ Already gathering :{{emoji}}: acorns',
   // Command parser errors
   'error.noEmoji': 'Please specify an emoji\nExample: `/canvas-collect :thumbsup:`',
   'error.invalidEmoji': '`{{token}}` is not a valid emoji\nPlease use the `:emoji:` format',
@@ -30,7 +30,7 @@ const en: Messages = {
   'error.missingScope': '❌ The app is missing required permissions\nPlease ask an admin to reinstall',
   'error.authInvalid': '❌ The app authentication is invalid\nPlease ask an admin to reinstall',
   'error.authError': '❌ An authentication error occurred\nPlease contact an admin',
-  'error.rateLimited': '⏳ Too many requests\nPlease wait and try again',
+  'error.rateLimited': '⏳ The squirrels are busy\nPlease wait and try again',
   'error.channelNotFoundApi': '❌ The specified channel was not found',
   'error.canvasEditFailed': '❌ No permission to edit the Canvas\nPlease check permissions with the channel admin',
   'error.canvasCreateFailed': '❌ Failed to create Canvas\nPlease wait and try again',
@@ -39,7 +39,7 @@ const en: Messages = {
   // Canvas
   'canvas.title': ':{{emoji}}: Collection Log',
   // Markdown
-  'markdown.heading': ':{{emoji}}: Collection Results',
+  'markdown.heading': ':{{emoji}}: Acorn Collection Results',
   'markdown.lastUpdated': 'Last updated: {{datetime}}',
   'markdown.messageCount': 'Messages collected: {{count}}',
   'markdown.targetChannels': 'Target channels: {{count}}',
