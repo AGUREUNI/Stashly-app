@@ -339,3 +339,58 @@ ja（日本語）, en（英語）, hi（ヒンディー語）, fr（フランス
 - 古いプロセスがSlackのコマンドを横取りするため、コード変更が反映されない
 - **対応**: 再起動時は `taskkill //F //IM node.exe` で全プロセスを終了してから起動
 - **対応**: `npm run dev`（ts-node）はキャッシュ問題があるため、`npm run build && node dist/app.js` を使用
+
+---
+
+## フェーズ5: 単体テスト ✅ 完了
+
+全サービスモジュールの単体テストを実装。
+
+- **146テスト全パス**、カバレッジ82%
+- 各サービスファイルに `*.test.ts` を配置
+- `src/test-helpers/mock-client.ts` でSlack WebClientモックファクトリを共通化
+
+---
+
+## フェーズ5.5: 統合テスト ✅ 完了
+
+メインハンドラ `canvas-collect.ts` のオーケストレーション全体を検証する統合テスト。
+
+### 方針
+- ハンドラ関数を `handleCanvasCollect` として named export に抽出 → テストから直接呼び出し可能
+- サービス関数（parseCommand, collectMessages, upsertCanvas 等）は**全て本物**を使用
+- Slack WebClient だけモック → 真の統合テスト
+
+### 変更ファイル
+
+| ファイル | 変更種別 | 内容 |
+|---------|---------|------|
+| `src/listeners/commands/canvas-collect.ts` | 修正 | ハンドラを `handleCanvasCollect` として named export 抽出 |
+| `src/test-helpers/mock-client.ts` | 修正 | `chat.postEphemeral` モック追加 |
+| `src/test-helpers/mock-command.ts` | **新規** | コマンドオブジェクトファクトリ |
+| `src/listeners/commands/canvas-collect.integration.test.ts` | **新規** | 統合テスト15ケース |
+
+### テストケース（15ケース）
+
+| カテゴリ | # | シナリオ |
+|---------|---|---------|
+| Happy paths | 1 | 絵文字のみ → 新規Canvas作成（全フロー） |
+| | 2 | 既存Canvas → 追記モード |
+| | 8 | 絵文字+チャンネル+期間の複合コマンド |
+| | 15 | 実行チャンネルを重複指定 → Set重複排除 |
+| No results | 3 | マッチなし → 該当なし通知 |
+| | 10 | 空入力 → NO_EMOJIエラー |
+| | 11 | 不正な絵文字形式 → PARSE_ERROR |
+| Lock management | 4 | ロック競合 → スキップ |
+| | 14 | 例外発生時のロック解放（finally句） |
+| Channel resolution | 5 | チャンネル名未検出 → エラー |
+| | 6 | Bot未参加チャンネル → skippedChannels警告 |
+| API errors | 7 | missing_scope → 翻訳済みエラー |
+| | 12 | 非AppError例外 → genericFallback |
+| Localization | 13 | 日本語locale → 日本語メッセージ |
+| Limits | 9 | 500件超過 → 上限警告 |
+
+### 結果
+- **161テスト全パス**（146単体 + 15統合）
+- `canvas-collect.ts` カバレッジ: **94%**（目標80%+）
+- 全体カバレッジ: **95.21%**（目標85%+）

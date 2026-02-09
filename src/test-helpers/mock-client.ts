@@ -18,6 +18,7 @@ export function createMockClient(overrides: Record<string, any> = {}): any {
     },
     chat: {
       getPermalink: vi.fn().mockResolvedValue({ permalink: 'https://slack.com/archives/C123/p123' }),
+      postEphemeral: vi.fn().mockResolvedValue({ ok: true }),
     },
     files: {
       list: vi.fn().mockResolvedValue({ files: [], response_metadata: {} }),

@@ -72,6 +72,18 @@ npm run build && node dist/app.js
 - `AppError.messageKey` でi18nキーを格納、catch側で `t(locale, key)` で翻訳
 - 追加スコープ: `users:read`（locale取得に必要）, `chat:write`（エフェメラル送信に必須）
 
+## テスト
+- **テストフレームワーク**: vitest v4
+- **カバレッジ**: v8
+- `npm test` - 全テスト実行（単体+統合、161テスト）
+- `npm run test:coverage` - カバレッジ付き実行
+- 単体テスト: `src/**/*.test.ts`（各サービスファイル横置き）
+- 統合テスト: `src/listeners/commands/canvas-collect.integration.test.ts`
+- テストヘルパー: `src/test-helpers/`（mock-client.ts, mock-command.ts）
+- `handleCanvasCollect` は named export でテストから直接呼び出し可能
+- 統合テストは実サービス + モックWebClient で真の統合テスト
+- カバレッジ: 全体95%+、canvas-collect.ts 94%
+
 ## 起動時に読むドキュメント
 - `implementation_plan.md` - 実装プラン（設計方針・ステップ・技術的判断の経緯）
 - `slack_canvas_collector_spec_v1_4.md` - 詳細仕様書
