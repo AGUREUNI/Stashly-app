@@ -1,7 +1,19 @@
-# Slack Canvas Collector
+# Stashly (Slack Canvas Collector)
 
 ## プロジェクト概要
 Slackで特定の絵文字リアクションが付いているメッセージを自動収集し、Canvasに整理してまとめるアプリ。
+
+## ブランディング
+- **アプリ名**: Stashly（リスがモチーフ、stash = 集めて隠す）
+- **アイコン**: フラットデザインのリス顔 + しっぽ、ゴールデン背景
+
+## リポジトリ & デプロイ
+- **GitHub**: https://github.com/AGUREUNI/Stashly-app
+- **ホスティング**: Railway（HTTP Mode）
+- **ブランチ運用**:
+  - `develop` - 開発ブランチ（機能開発・バグ修正）
+  - `release` - 本番デプロイブランチ（Railwayと連携）
+  - `main` - 安定版・ドキュメント管理
 
 ## 技術スタック
 - **言語**: TypeScript

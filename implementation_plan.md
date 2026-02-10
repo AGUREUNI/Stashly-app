@@ -394,3 +394,21 @@ ja（日本語）, en（英語）, hi（ヒンディー語）, fr（フランス
 - **161テスト全パス**（146単体 + 15統合）
 - `canvas-collect.ts` カバレッジ: **94%**（目標80%+）
 - 全体カバレッジ: **95.21%**（目標85%+）
+
+---
+
+## フェーズ6: デプロイ & 公開 ✅ 完了
+
+### Railway デプロイ
+- **ホスティング**: Railway（HTTP Mode）
+- `release` ブランチをデプロイ対象に設定
+- 環境変数（`SLACK_BOT_TOKEN`, `SLACK_SIGNING_SECRET`, `PORT`）をRailway側で設定
+- Request URLをRailwayのURLに設定
+
+### GitHub リポジトリ公開
+- **リポジトリ**: https://github.com/AGUREUNI/Stashly-app
+- **ブランチ運用**:
+  - `develop` - 開発ブランチ（機能開発・バグ修正）
+  - `release` - 本番デプロイブランチ（Railwayと連携）
+  - `main` - 安定版・ドキュメント管理
+- README.md、CLAUDE.md等のドキュメント整備
