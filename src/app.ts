@@ -18,6 +18,6 @@ registerCommands(app);
   const port = Number(process.env.PORT) || 3000;
   await app.start(port);
   console.log(
-    `⚡ Slack Canvas Collector is running (${isSocketMode ? 'Socket Mode' : `HTTP on port ${port}`})`,
+    `⚡ Stashly is running (${isSocketMode ? 'Socket Mode' : `HTTP on port ${port}`})`,
   );
 })();
