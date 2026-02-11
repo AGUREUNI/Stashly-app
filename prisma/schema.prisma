@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model SlackInstallation {
+  id                  String    @id @default(cuid())
+  teamId              String    @unique @map("team_id")
+  teamName            String?   @map("team_name")
+  enterpriseId        String?   @map("enterprise_id")
+  enterpriseName      String?   @map("enterprise_name")
+  isEnterpriseInstall Boolean   @default(false) @map("is_enterprise_install")
+  botToken            String    @map("bot_token")
+  botRefreshToken     String?   @map("bot_refresh_token")
+  botTokenExpiresAt   DateTime? @map("bot_token_expires_at")
+  botId               String    @map("bot_id")
+  botUserId           String    @map("bot_user_id")
+  botScopes           String    @map("bot_scopes")
+  installerUserId     String    @map("installer_user_id")
+  installerUserToken  String?   @map("installer_user_token")
+  installerUserScopes String?   @map("installer_user_scopes")
+  appId               String?   @map("app_id")
+  tokenType           String?   @default("bot") @map("token_type")
+  installedAt         DateTime  @default(now()) @map("installed_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+
+  @@map("slack_installations")
+}

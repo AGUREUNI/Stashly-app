@@ -19,15 +19,23 @@ Slackで特定の絵文字リアクションが付いているメッセージを
 - **言語**: TypeScript
 - **ランタイム**: Node.js
 - **フレームワーク**: @slack/bolt v4
+- **ORM**: Prisma v7（PostgreSQL）
 - **パッケージマネージャ**: npm
 
 ## プロジェクト構成
 ```
+prisma/
+├── schema.prisma                   # DBスキーマ（SlackInstallation）
+prisma.config.ts                    # Prisma v7 設定（datasource URL等）
 src/
-├── app.ts                          # Bolt app初期化・起動
-├── listeners/commands/
-│   ├── index.ts                    # コマンドリスナー登録
-│   └── canvas-collect.ts           # /canvas-collect ハンドラ
+├── app.ts                          # Bolt app初期化・起動（3モード分岐）
+├── listeners/
+│   ├── commands/
+│   │   ├── index.ts                # コマンドリスナー登録
+│   │   └── canvas-collect.ts       # /canvas-collect ハンドラ
+│   └── events/
+│       ├── index.ts                # イベントリスナー登録
+│       └── app-uninstalled.ts      # app_uninstalled/tokens_revoked 処理
 ├── services/
 │   ├── block-builder.ts            # Block Kit構築（エフェメラルメッセージ用）
 │   ├── command-parser.ts           # コマンド引数パーサー
@@ -35,7 +43,9 @@ src/
 │   ├── canvas-manager.ts           # Canvas検索・作成・追記
 │   ├── markdown-builder.ts         # Canvas用Markdown生成
 │   ├── slack-api.ts                # Slack APIラッパー（リトライ付き）
-│   └── lock-manager.ts             # 同時実行制御（インメモリ）
+│   ├── lock-manager.ts             # 同時実行制御（インメモリ）
+│   ├── crypto.ts                   # AES-256-GCM トークン暗号化/復号
+│   └── installation-store.ts       # OAuth InstallationStore（Prisma）
 ├── i18n/
 │   ├── types.ts                    # i18n型定義（Messages, SupportedLocale）
 │   ├── index.ts                    # i18nコア（t(), getUserLocale(), resolveLocale()）
@@ -52,10 +62,20 @@ src/
 - `npm start` - 本番起動（node dist/app.js）
 
 ## 環境変数
-- `SLACK_BOT_TOKEN` - Bot Token (xoxb-)
+- `SLACK_BOT_TOKEN` - Bot Token (xoxb-) ※Socket/Single-tenantモード用
 - `SLACK_SIGNING_SECRET` - Signing Secret
-- `SLACK_APP_TOKEN` - App Token (xapp-) ※ソケットモード用
+- `SLACK_APP_TOKEN` - App Token (xapp-) ※Socket Mode用
 - `PORT` - HTTPポート（デフォルト: 3000）
+- `SLACK_CLIENT_ID` - OAuth Client ID ※OAuthモード用
+- `SLACK_CLIENT_SECRET` - OAuth Client Secret
+- `SLACK_STATE_SECRET` - CSRF防止用ランダム文字列
+- `DATABASE_URL` - PostgreSQL接続URL
+- `ENCRYPTION_KEY` - AES-256-GCM暗号化キー（64桁hex）
+
+## 動作モード
+1. **Socket Mode**: `SLACK_APP_TOKEN` 設定時。ローカル開発用
+2. **OAuth Mode**: `SLACK_CLIENT_ID` 設定時。本番マルチテナント用。PostgreSQL必須
+3. **HTTP Single-tenant**: どちらも未設定。`SLACK_BOT_TOKEN` で単一ワークスペース
 
 ## ローカル開発時の注意: Socket Mode プロセス残留問題
 
@@ -87,7 +107,7 @@ npm run build && node dist/app.js
 ## テスト
 - **テストフレームワーク**: vitest v4
 - **カバレッジ**: v8
-- `npm test` - 全テスト実行（単体+統合、161テスト）
+- `npm test` - 全テスト実行（単体+統合、175テスト）
 - `npm run test:coverage` - カバレッジ付き実行
 - 単体テスト: `src/**/*.test.ts`（各サービスファイル横置き）
 - 統合テスト: `src/listeners/commands/canvas-collect.integration.test.ts`

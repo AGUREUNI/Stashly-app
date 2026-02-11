@@ -77,7 +77,7 @@ export async function handleCanvasCollect({ command, ack, client }: {
     );
 
     // 5. ロック取得
-    if (!lockManager.acquire(emoji)) {
+    if (!lockManager.acquire(`${teamId}:${emoji}`)) {
       await sendEphemeral(
         t(locale, 'lock.conflictFallback', { emoji }),
         buildLockConflictBlocks(locale, emoji),
@@ -128,7 +128,7 @@ export async function handleCanvasCollect({ command, ack, client }: {
     } finally {
       // 9. ロック解除（finally句で確実に）
       if (emoji) {
-        lockManager.release(emoji);
+        lockManager.release(`${teamId}:${emoji}`);
       }
     }
   } catch (error) {

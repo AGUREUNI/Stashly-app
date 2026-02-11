@@ -215,8 +215,8 @@ describe('handleCanvasCollect 統合テスト', () => {
     const command = createMockCommand({ text: ':thumbsup:' });
     setupHistoryWithReactions(client, 'thumbsup', 3);
 
-    // 先にロックを取得
-    lockManager.acquire('thumbsup');
+    // 先にロックを取得（マルチテナント対応で teamId:emoji 形式）
+    lockManager.acquire('T_TEAM:thumbsup');
 
     await handleCanvasCollect({ command, ack, client });
 
@@ -244,7 +244,7 @@ describe('handleCanvasCollect 統合テスト', () => {
 
     expect(ack).toHaveBeenCalledOnce();
     // ロックが解放されている → 同じ絵文字で再度ロック取得できる
-    expect(lockManager.acquire('thumbsup')).toBe(true);
+    expect(lockManager.acquire('T_TEAM:thumbsup')).toBe(true);
   });
 
   // ─── Channel resolution ────────────────────────────────
