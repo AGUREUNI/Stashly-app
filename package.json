@@ -17,7 +17,8 @@
   "dependencies": {
     "@prisma/client": "^7.3.0",
     "@slack/bolt": "^4.1.0",
-    "dotenv": "^16.4.7"
+    "dotenv": "^16.4.7",
+    "magicast": "^0.5.2"
   },
   "engines": {
     "node": ">=20.0.0"
