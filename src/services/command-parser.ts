@@ -2,6 +2,9 @@ import { ParsedCommand, AppError } from '../types';
 import { t } from '../i18n';
 import type { SupportedLocale } from '../i18n';
 
+/** 期間指定の上限（日） */
+const MAX_PERIOD_DAYS = 365;
+
 /** チャンネル参照パターン（Slack自動変換）: <#C1234|channel-name> */
 const LINKED_CHANNEL_PATTERN = /<#(C[A-Z0-9]+)\|[^>]*>/g;
 
@@ -108,6 +111,10 @@ export function parseCommand(text: string, locale: SupportedLocale): ParsedComma
 
   if (periodDays !== null && periodDays <= 0) {
     throw new AppError('PARSE_ERROR', t(locale, 'error.invalidPeriod'));
+  }
+
+  if (periodDays !== null && periodDays > MAX_PERIOD_DAYS) {
+    throw new AppError('PARSE_ERROR', t(locale, 'error.periodTooLong', { maxDays: MAX_PERIOD_DAYS }));
   }
 
   return { emoji, channels, channelNames, periodDays };

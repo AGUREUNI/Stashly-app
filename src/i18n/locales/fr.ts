@@ -23,6 +23,8 @@ const fr: Messages = {
   'error.tooManyChannels': 'Vous pouvez spécifier jusqu\'à 9 canaux (10 avec le canal actuel)',
   'error.multiplePeriods': '❌ Une seule période peut être spécifiée',
   'error.invalidPeriod': 'La période doit être d\'au moins 1 jour',
+  'error.periodTooLong': 'La période ne peut pas dépasser {{maxDays}} jours',
+  'error.userRateLimited': '⏳ Vous avez atteint la limite de requêtes\nVeuillez patienter et réessayer',
   'error.channelNotFound': '❌ Canal {{channels}} introuvable',
   // Exemple de syntaxe
   'command.periodExample': 'derniers 7 jours',

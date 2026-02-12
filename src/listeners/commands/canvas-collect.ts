@@ -16,6 +16,17 @@ import {
   buildLockConflictBlocks,
 } from '../../services/block-builder';
 
+/** per-userレートリミット: userId → 最終実行時刻 */
+const userLastExecution = new Map<string, number>();
+
+/** クールダウン: 60秒 */
+const USER_COOLDOWN_MS = 60 * 1000;
+
+/** テスト用: per-userレートリミットをクリア */
+export function _clearUserRateLimitForTest(): void {
+  userLastExecution.clear();
+}
+
 /**
  * /canvas-collect コマンドのハンドラ本体
  * テストから直接呼び出し可能にするため named export
@@ -46,6 +57,16 @@ export async function handleCanvasCollect({ command, ack, client }: {
     });
   };
 
+  // per-userレートリミットチェック
+  const now = Date.now();
+  const lastExec = userLastExecution.get(userId);
+  if (lastExec && now - lastExec < USER_COOLDOWN_MS) {
+    const msg = t(locale, 'error.userRateLimited');
+    await sendEphemeral(msg, buildErrorBlocks(msg));
+    return;
+  }
+  userLastExecution.set(userId, now);
+
   let emoji: string | undefined;
 
   try {
@@ -70,13 +91,7 @@ export async function handleCanvasCollect({ command, ack, client }: {
     const targetChannels = new Set<string>([channelId, ...parsed.channels, ...resolvedChannelIds]);
     const channelIds = Array.from(targetChannels);
 
-    // 4. 収集中メッセージ送信
-    await sendEphemeral(
-      t(locale, 'collecting.fallback', { channelCount: channelIds.length, emoji }),
-      buildCollectingBlocks(locale, emoji, channelIds.length),
-    );
-
-    // 5. ロック取得
+    // 4. ロック取得（「収集中」送信の前に取得して矛盾メッセージを防止）
     if (!lockManager.acquire(`${teamId}:${emoji}`)) {
       await sendEphemeral(
         t(locale, 'lock.conflictFallback', { emoji }),
@@ -86,6 +101,11 @@ export async function handleCanvasCollect({ command, ack, client }: {
     }
 
     try {
+      // 5. 収集中メッセージ送信
+      await sendEphemeral(
+        t(locale, 'collecting.fallback', { channelCount: channelIds.length, emoji }),
+        buildCollectingBlocks(locale, emoji, channelIds.length),
+      );
       // 6. メッセージ収集
       const result = await collectMessages(client, emoji, channelIds, parsed.periodDays);
 
@@ -132,19 +152,23 @@ export async function handleCanvasCollect({ command, ack, client }: {
       }
     }
   } catch (error) {
-    // エラーハンドリング
-    if (error instanceof AppError) {
-      // messageKeyがあれば翻訳、なければそのまま（command-parserは翻訳済み）
-      let msg = error.message;
-      if (error.messageKey) {
-        const params: Record<string, string> = {};
-        if (error.detail) params.code = error.detail;
-        msg = t(locale, error.messageKey as MessageKey, params);
+    // エラーハンドリング（sendEphemeral自体の失敗も捕捉）
+    try {
+      if (error instanceof AppError) {
+        // messageKeyがあれば翻訳、なければそのまま（command-parserは翻訳済み）
+        let msg = error.message;
+        if (error.messageKey) {
+          const params: Record<string, string> = {};
+          if (error.detail) params.code = error.detail;
+          msg = t(locale, error.messageKey as MessageKey, params);
+        }
+        await sendEphemeral(msg, buildErrorBlocks(msg));
+      } else {
+        const msg = t(locale, 'error.genericFallback');
+        await sendEphemeral(msg, buildErrorBlocks(msg));
       }
-      await sendEphemeral(msg, buildErrorBlocks(msg));
-    } else {
-      const msg = t(locale, 'error.genericFallback');
-      await sendEphemeral(msg, buildErrorBlocks(msg));
+    } catch (sendError) {
+      console.error('Failed to send error ephemeral:', sendError);
     }
   }
 }

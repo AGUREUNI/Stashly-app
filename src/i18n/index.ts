@@ -43,6 +43,19 @@ const localeCache = new Map<string, { locale: SupportedLocale; expiresAt: number
 /** キャッシュTTL: 30分 */
 const CACHE_TTL_MS = 30 * 60 * 1000;
 
+/** キャッシュサイズ上限 */
+const MAX_CACHE_SIZE = 1000;
+
+/** 期限切れエントリをスイープ */
+function sweepExpiredLocaleCache(): void {
+  const now = Date.now();
+  for (const [key, value] of localeCache) {
+    if (value.expiresAt <= now) {
+      localeCache.delete(key);
+    }
+  }
+}
+
 /**
  * Slack users.info API からユーザーのlocaleを取得する
  * 30分間インメモリキャッシュ
@@ -52,6 +65,11 @@ export async function getUserLocale(client: WebClient, userId: string): Promise<
   const cached = localeCache.get(userId);
   if (cached && cached.expiresAt > Date.now()) {
     return cached.locale;
+  }
+
+  // サイズ上限到達時にスイープ
+  if (localeCache.size >= MAX_CACHE_SIZE) {
+    sweepExpiredLocaleCache();
   }
 
   try {

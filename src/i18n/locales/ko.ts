@@ -23,6 +23,8 @@ const ko: Messages = {
   'error.tooManyChannels': '채널은 최대 9개까지 지정할 수 있습니다 (현재 채널 포함 10개)',
   'error.multiplePeriods': '❌ 기간은 하나만 지정할 수 있습니다',
   'error.invalidPeriod': '기간은 최소 1일 이상이어야 합니다',
+  'error.periodTooLong': '기간은 최대 {{maxDays}}일까지 지정할 수 있습니다',
+  'error.userRateLimited': '⏳ 실행 횟수 제한에 도달했습니다\n잠시 후 다시 시도해주세요',
   'error.channelNotFound': '❌ 채널 {{channels}}을(를) 찾을 수 없습니다',
   // 명령어 구문 예시
   'command.periodExample': '최근 7일',

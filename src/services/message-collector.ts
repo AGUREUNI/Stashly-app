@@ -97,11 +97,14 @@ async function collectFromChannel(
         break;
       }
 
+      // tsが無いメッセージはスキップ
+      if (!msg.ts) continue;
+
       // メインメッセージの絵文字チェック
       if (hasReaction(msg, emoji)) {
-        const permalink = await getPermalink(client, channelId, msg.ts!);
+        const permalink = await getPermalink(client, channelId, msg.ts);
         messages.push({
-          ts: msg.ts!,
+          ts: msg.ts,
           channelId,
           channelName,
           permalink,
@@ -115,8 +118,9 @@ async function collectFromChannel(
           emoji,
           channelId,
           channelName,
-          msg.ts!,
+          msg.ts,
           MAX_MESSAGES_PER_CHANNEL - messages.length,
+          oldest,
         );
 
         if (messages.length + threadMessages.messages.length > MAX_MESSAGES_PER_CHANNEL) {
@@ -149,6 +153,7 @@ async function collectFromThread(
   channelName: string,
   threadTs: string,
   remainingLimit: number,
+  oldest?: string,
 ): Promise<{ messages: CollectedMessage[] }> {
   const messages: CollectedMessage[] = [];
 
@@ -160,6 +165,7 @@ async function collectFromThread(
       client.conversations.replies({
         channel: channelId,
         ts: threadTs,
+        oldest,
         limit: 200,
         cursor,
       }),
@@ -168,6 +174,9 @@ async function collectFromThread(
     const replyMessages = result.messages ?? [];
 
     for (const msg of replyMessages) {
+      // tsが無いメッセージはスキップ
+      if (!msg.ts) continue;
+
       // スレッド親自体はスキップ（メインループで処理済み）
       if (msg.ts === threadTs) continue;
 
@@ -177,9 +186,9 @@ async function collectFromThread(
       }
 
       if (hasReaction(msg, emoji)) {
-        const permalink = await getPermalink(client, channelId, msg.ts!);
+        const permalink = await getPermalink(client, channelId, msg.ts);
         messages.push({
-          ts: msg.ts!,
+          ts: msg.ts,
           channelId,
           channelName,
           permalink,

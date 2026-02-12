@@ -9,7 +9,7 @@ function getEncryptionKey(): Buffer {
   if (!keyHex) {
     throw new Error('ENCRYPTION_KEY environment variable is not set');
   }
-  if (keyHex.length !== 64) {
+  if (!/^[0-9a-fA-F]{64}$/.test(keyHex)) {
     throw new Error('ENCRYPTION_KEY must be exactly 64 hex characters (32 bytes)');
   }
   return Buffer.from(keyHex, 'hex');

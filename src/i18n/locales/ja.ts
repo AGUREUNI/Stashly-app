@@ -23,6 +23,8 @@ const ja: Messages = {
   'error.tooManyChannels': 'チャンネル指定は最大9個までです（実行チャンネルを含めて10個）',
   'error.multiplePeriods': '❌ 期間指定は1つまでです',
   'error.invalidPeriod': '期間は1日以上で指定してください',
+  'error.periodTooLong': '期間は最大{{maxDays}}日までです',
+  'error.userRateLimited': '⏳ 連続実行の制限に達しました\nしばらく待ってから再度お試しください',
   'error.channelNotFound': '❌ チャンネル {{channels}} が見つかりません',
   // コマンド構文例
   'command.periodExample': '過去7日',

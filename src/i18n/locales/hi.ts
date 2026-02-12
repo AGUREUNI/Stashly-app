@@ -23,6 +23,8 @@ const hi: Messages = {
   'error.tooManyChannels': 'अधिकतम 9 चैनल निर्दिष्ट किए जा सकते हैं (वर्तमान चैनल सहित 10)',
   'error.multiplePeriods': '❌ केवल एक अवधि निर्दिष्ट की जा सकती है',
   'error.invalidPeriod': 'अवधि कम से कम 1 दिन होनी चाहिए',
+  'error.periodTooLong': 'अवधि अधिकतम {{maxDays}} दिन हो सकती है',
+  'error.userRateLimited': '⏳ आप दर सीमा तक पहुँच गए हैं\nकृपया प्रतीक्षा करें और पुनः प्रयास करें',
   'error.channelNotFound': '❌ चैनल {{channels}} नहीं मिला',
   // कमांड सिंटैक्स उदाहरण
   'command.periodExample': 'पिछले 7 दिन',

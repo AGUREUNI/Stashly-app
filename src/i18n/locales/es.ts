@@ -23,6 +23,8 @@ const es: Messages = {
   'error.tooManyChannels': 'Puede especificar hasta 9 canales (10 incluyendo el canal actual)',
   'error.multiplePeriods': '❌ Solo se puede especificar un período',
   'error.invalidPeriod': 'El período debe ser de al menos 1 día',
+  'error.periodTooLong': 'El período no puede exceder {{maxDays}} días',
+  'error.userRateLimited': '⏳ Has alcanzado el límite de ejecuciones\nPor favor espera e intenta de nuevo',
   'error.channelNotFound': '❌ Canal {{channels}} no encontrado',
   // Ejemplo de sintaxis
   'command.periodExample': 'últimos 7 días',

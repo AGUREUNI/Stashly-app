@@ -23,6 +23,8 @@ const en: Messages = {
   'error.tooManyChannels': 'You can specify up to 9 channels (10 including the current channel)',
   'error.multiplePeriods': '❌ Only one period can be specified',
   'error.invalidPeriod': 'Period must be at least 1 day',
+  'error.periodTooLong': 'Period cannot exceed {{maxDays}} days',
+  'error.userRateLimited': '⏳ You have reached the rate limit\nPlease wait and try again',
   'error.channelNotFound': '❌ Channel {{channels}} not found',
   // Command syntax example
   'command.periodExample': 'last 7 days',

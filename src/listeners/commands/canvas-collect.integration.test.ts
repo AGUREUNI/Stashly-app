@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { handleCanvasCollect } from './canvas-collect';
+import { handleCanvasCollect, _clearUserRateLimitForTest } from './canvas-collect';
 import { createMockClient } from '../../test-helpers/mock-client';
 import { createMockCommand } from '../../test-helpers/mock-command';
 import { lockManager } from '../../services/lock-manager';
@@ -50,6 +50,7 @@ describe('handleCanvasCollect 統合テスト', () => {
     ack = vi.fn().mockResolvedValue(undefined);
     lockManager._clearForTest();
     _clearLocaleCacheForTest();
+    _clearUserRateLimitForTest();
 
     // デフォルト: 英語locale
     client.users.info.mockResolvedValue({ user: { locale: 'en-US' } });
@@ -221,9 +222,9 @@ describe('handleCanvasCollect 統合テスト', () => {
     await handleCanvasCollect({ command, ack, client });
 
     expect(ack).toHaveBeenCalledOnce();
-    // 収集中 + ロック競合 = 2回
-    expect(client.chat.postEphemeral).toHaveBeenCalledTimes(2);
-    const lockCall = client.chat.postEphemeral.mock.calls[1][0];
+    // ロック競合のみ = 1回（ロック取得が「収集中」送信の前に移動されたため）
+    expect(client.chat.postEphemeral).toHaveBeenCalledTimes(1);
+    const lockCall = client.chat.postEphemeral.mock.calls[0][0];
     expect(lockCall.text).toContain('thumbsup');
     expect(lockCall.text).toContain('gathering');
 

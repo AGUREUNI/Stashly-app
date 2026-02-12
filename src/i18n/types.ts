@@ -22,6 +22,8 @@ export interface Messages {
   'error.tooManyChannels': string;
   'error.multiplePeriods': string;
   'error.invalidPeriod': string;
+  'error.periodTooLong': string;
+  'error.userRateLimited': string;
   'error.channelNotFound': string;
   // コマンド構文例
   'command.periodExample': string;

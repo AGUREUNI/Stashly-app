@@ -5,9 +5,18 @@ import { registerCommands } from './listeners/commands';
 const isSocketMode = !!process.env.SLACK_APP_TOKEN;
 const isOAuthMode = !!process.env.SLACK_CLIENT_ID;
 
+function validateEnvVars(required: string[], mode: string): void {
+  const missing = required.filter(key => !process.env[key]);
+  if (missing.length > 0) {
+    console.error(`Missing required environment variables for ${mode}: ${missing.join(', ')}`);
+    process.exit(1);
+  }
+}
+
 function createApp(): App {
   // Mode 1: Socket Mode（ローカル開発用）
   if (isSocketMode) {
+    validateEnvVars(['SLACK_BOT_TOKEN', 'SLACK_SIGNING_SECRET', 'SLACK_APP_TOKEN'], 'Socket Mode');
     return new App({
       token: process.env.SLACK_BOT_TOKEN,
       signingSecret: process.env.SLACK_SIGNING_SECRET,
@@ -18,6 +27,10 @@ function createApp(): App {
 
   // Mode 2: OAuth Mode（本番マルチテナント）
   if (isOAuthMode) {
+    validateEnvVars(
+      ['SLACK_SIGNING_SECRET', 'SLACK_CLIENT_ID', 'SLACK_CLIENT_SECRET', 'SLACK_STATE_SECRET', 'DATABASE_URL', 'ENCRYPTION_KEY'],
+      'OAuth Mode',
+    );
     // 動的 import を避けるため、起動時にチェックだけ行う
     // installation-store は OAuth モード時のみ import
     const { installationStore } = require('./services/installation-store');
@@ -48,6 +61,7 @@ function createApp(): App {
   }
 
   // Mode 3: HTTP Single-tenant（フォールバック）
+  validateEnvVars(['SLACK_BOT_TOKEN', 'SLACK_SIGNING_SECRET'], 'HTTP Single-tenant');
   return new App({
     token: process.env.SLACK_BOT_TOKEN,
     signingSecret: process.env.SLACK_SIGNING_SECRET,
@@ -82,7 +96,10 @@ if (isOAuthMode) {
       ? `OAuth Mode (HTTP on port ${port})`
       : `HTTP on port ${port}`;
   console.log(`⚡ Stashly is running (${mode})`);
-})();
+})().catch(err => {
+  console.error('Fatal startup error:', err);
+  process.exit(1);
+});
 
 // Graceful shutdown
 const shutdown = async (signal: string) => {
@@ -101,3 +118,6 @@ const shutdown = async (signal: string) => {
 
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 process.on('SIGINT', () => shutdown('SIGINT'));
+process.on('unhandledRejection', (reason) => {
+  console.error('Unhandled Rejection:', reason);
+});
