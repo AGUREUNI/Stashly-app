@@ -24,6 +24,7 @@ const hi: Messages = {
   'error.multiplePeriods': '❌ केवल एक अवधि निर्दिष्ट की जा सकती है',
   'error.invalidPeriod': 'अवधि कम से कम 1 दिन होनी चाहिए',
   'error.periodTooLong': 'अवधि अधिकतम {{maxDays}} दिन हो सकती है',
+  'error.inputTooLong': 'इनपुट बहुत लंबा है (अधिकतम 500 अक्षर)',
   'error.userRateLimited': '⏳ आप दर सीमा तक पहुँच गए हैं\nकृपया प्रतीक्षा करें और पुनः प्रयास करें',
   'error.channelNotFound': '❌ चैनल {{channels}} नहीं मिला',
   // कमांड सिंटैक्स उदाहरण

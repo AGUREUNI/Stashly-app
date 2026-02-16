@@ -1,6 +1,7 @@
 import { App } from '@slack/bolt';
 import 'dotenv/config';
 import { registerCommands } from './listeners/commands';
+import { lockManager } from './services/lock-manager';
 
 const isSocketMode = !!process.env.SLACK_APP_TOKEN;
 const isOAuthMode = !!process.env.SLACK_CLIENT_ID;
@@ -12,6 +13,16 @@ function validateEnvVars(required: string[], mode: string): void {
     process.exit(1);
   }
 }
+
+/** HTTP系モード用ヘルスチェックルート */
+const healthRoute = {
+  path: '/health' as const,
+  method: 'GET' as const,
+  handler: (_req: any, res: any) => {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ status: 'ok', timestamp: new Date().toISOString() }));
+  },
+};
 
 function createApp(): App {
   // Mode 1: Socket Mode（ローカル開発用）
@@ -57,6 +68,7 @@ function createApp(): App {
       installerOptions: {
         directInstall: true,
       },
+      customRoutes: [healthRoute],
     });
   }
 
@@ -65,6 +77,7 @@ function createApp(): App {
   return new App({
     token: process.env.SLACK_BOT_TOKEN,
     signingSecret: process.env.SLACK_SIGNING_SECRET,
+    customRoutes: [healthRoute],
   });
 }
 
@@ -105,6 +118,7 @@ if (isOAuthMode) {
 const shutdown = async (signal: string) => {
   console.log(`\n${signal} received. Shutting down...`);
   try {
+    lockManager.shutdown();
     await app.stop();
     if (isOAuthMode) {
       const { prisma } = require('./services/installation-store');

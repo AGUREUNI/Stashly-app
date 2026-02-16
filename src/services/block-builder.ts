@@ -135,6 +135,15 @@ export function buildErrorBlocks(message: string): KnownBlock[] {
         text: message,
       },
     },
+    {
+      type: 'context',
+      elements: [
+        {
+          type: 'mrkdwn',
+          text: new Date().toISOString(),
+        },
+      ],
+    },
   ];
 }
 

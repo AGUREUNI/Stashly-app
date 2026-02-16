@@ -22,6 +22,16 @@ const userLastExecution = new Map<string, number>();
 /** クールダウン: 60秒 */
 const USER_COOLDOWN_MS = 60 * 1000;
 
+/** 古いレートリミットエントリを定期クリーンアップ */
+setInterval(() => {
+  const now = Date.now();
+  for (const [userId, lastExec] of userLastExecution) {
+    if (now - lastExec > USER_COOLDOWN_MS) {
+      userLastExecution.delete(userId);
+    }
+  }
+}, USER_COOLDOWN_MS);
+
 /** テスト用: per-userレートリミットをクリア */
 export function _clearUserRateLimitForTest(): void {
   userLastExecution.clear();

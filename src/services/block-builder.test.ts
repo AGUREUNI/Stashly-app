@@ -93,10 +93,14 @@ describe('buildNoResultBlocks', () => {
 });
 
 describe('buildErrorBlocks', () => {
-  it('should return section with error message', () => {
+  it('should return section with error message and timestamp', () => {
     const blocks = buildErrorBlocks('Something went wrong');
-    expect(blocks).toHaveLength(1);
+    expect(blocks).toHaveLength(2);
     expect((blocks[0] as any).text.text).toBe('Something went wrong');
+    expect(blocks[1].type).toBe('context');
+    // タイムスタンプがISO形式であることを確認
+    const contextText = (blocks[1] as any).elements[0].text;
+    expect(() => new Date(contextText).toISOString()).not.toThrow();
   });
 });
 

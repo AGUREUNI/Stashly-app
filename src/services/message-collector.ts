@@ -209,8 +209,8 @@ async function collectFromThread(
  * メッセージに指定絵文字のリアクションがあるかチェック
  */
 function hasReaction(message: any, emoji: string): boolean {
-  if (!message.reactions) return false;
-  return message.reactions.some((r: any) => r.name === emoji);
+  if (!Array.isArray(message.reactions)) return false;
+  return message.reactions.some((r: any) => typeof r.name === 'string' && r.name === emoji);
 }
 
 /**

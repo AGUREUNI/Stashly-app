@@ -117,7 +117,7 @@ export const installationStore: InstallationStore = {
       });
     } catch (error: any) {
       // Prisma throws P2025 when record not found - ignore silently
-      if (error?.code === 'P2025') {
+      if (error?.name === 'PrismaClientKnownRequestError' && error?.code === 'P2025') {
         return;
       }
       throw error;

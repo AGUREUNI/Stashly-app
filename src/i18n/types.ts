@@ -23,6 +23,7 @@ export interface Messages {
   'error.multiplePeriods': string;
   'error.invalidPeriod': string;
   'error.periodTooLong': string;
+  'error.inputTooLong': string;
   'error.userRateLimited': string;
   'error.channelNotFound': string;
   // コマンド構文例

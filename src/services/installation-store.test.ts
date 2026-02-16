@@ -190,7 +190,7 @@ describe('installationStore', () => {
     });
 
     it('存在しないレコードの削除はエラーにならない', async () => {
-      mockDelete.mockRejectedValue({ code: 'P2025' });
+      mockDelete.mockRejectedValue({ name: 'PrismaClientKnownRequestError', code: 'P2025' });
 
       const query: InstallationQuery<false> = {
         teamId: 'T_NONEXIST',

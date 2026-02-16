@@ -24,6 +24,7 @@ const zh: Messages = {
   'error.multiplePeriods': '❌ 只能指定一个时间范围',
   'error.invalidPeriod': '时间范围必须至少为1天',
   'error.periodTooLong': '时间范围不能超过{{maxDays}}天',
+  'error.inputTooLong': '输入内容过长（最多500个字符）',
   'error.userRateLimited': '⏳ 您已达到执行频率限制\n请稍后重试',
   'error.channelNotFound': '❌ 未找到频道 {{channels}}',
   // 命令语法示例

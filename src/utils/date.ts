@@ -3,7 +3,7 @@
  */
 export function slackTsToDate(ts: string): Date {
   const seconds = parseFloat(ts);
-  return new Date(seconds * 1000);
+  return new Date(Math.round(seconds * 1000));
 }
 
 /**

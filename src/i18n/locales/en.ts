@@ -24,6 +24,7 @@ const en: Messages = {
   'error.multiplePeriods': '❌ Only one period can be specified',
   'error.invalidPeriod': 'Period must be at least 1 day',
   'error.periodTooLong': 'Period cannot exceed {{maxDays}} days',
+  'error.inputTooLong': 'Input is too long (max 500 characters)',
   'error.userRateLimited': '⏳ You have reached the rate limit\nPlease wait and try again',
   'error.channelNotFound': '❌ Channel {{channels}} not found',
   // Command syntax example

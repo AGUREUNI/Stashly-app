@@ -20,6 +20,12 @@ const SKIPPABLE_ERRORS = new Set([
 const MAX_RETRIES = 3;
 const BASE_DELAY_MS = 1000;
 
+/** API呼び出しタイムアウト（30秒） */
+const API_TIMEOUT_MS = 30_000;
+
+/** fetchAllPagesの安全上限 */
+const MAX_TOTAL_ITEMS = 10_000;
+
 /**
  * Slack APIレスポンスのエラーをAppErrorに変換
  */
@@ -70,7 +76,13 @@ export async function callWithRetry<T>(
 ): Promise<T> {
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     try {
-      return await fn();
+      const result = await Promise.race([
+        fn(),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('API call timed out')), API_TIMEOUT_MS),
+        ),
+      ]);
+      return result;
     } catch (error: unknown) {
       const code = (error as any)?.data?.error ?? (error as any)?.code ?? '';
 
@@ -101,6 +113,9 @@ export async function fetchAllPages<T>(
   do {
     const result = await callWithRetry(() => fetcher(cursor));
     allItems.push(...result.items);
+    if (allItems.length >= MAX_TOTAL_ITEMS) {
+      break;
+    }
     cursor = result.nextCursor;
   } while (cursor);
 

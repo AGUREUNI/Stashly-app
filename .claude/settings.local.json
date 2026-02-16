@@ -9,7 +9,9 @@
       "Bash(node dist/app.js:*)",
       "Bash(npx vitest run:*)",
       "Bash(npx prisma:*)",
-      "WebSearch"
+      "WebSearch",
+      "mcp__filesystem__read_multiple_files",
+      "Bash(npm test:*)"
     ]
   }
 }

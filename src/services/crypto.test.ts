@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { encrypt, decrypt } from './crypto';
+import { encrypt, decrypt, _clearKeyCache } from './crypto';
 
 const VALID_KEY = 'a'.repeat(64); // 64 hex chars = 32 bytes
 
@@ -9,6 +9,7 @@ describe('crypto', () => {
   beforeEach(() => {
     originalKey = process.env.ENCRYPTION_KEY;
     process.env.ENCRYPTION_KEY = VALID_KEY;
+    _clearKeyCache();
   });
 
   afterEach(() => {
@@ -17,6 +18,7 @@ describe('crypto', () => {
     } else {
       delete process.env.ENCRYPTION_KEY;
     }
+    _clearKeyCache();
   });
 
   it('encrypt/decrypt ラウンドトリップが正しく動作する', () => {

@@ -24,6 +24,7 @@ const es: Messages = {
   'error.multiplePeriods': '❌ Solo se puede especificar un período',
   'error.invalidPeriod': 'El período debe ser de al menos 1 día',
   'error.periodTooLong': 'El período no puede exceder {{maxDays}} días',
+  'error.inputTooLong': 'La entrada es demasiado larga (máx. 500 caracteres)',
   'error.userRateLimited': '⏳ Has alcanzado el límite de ejecuciones\nPor favor espera e intenta de nuevo',
   'error.channelNotFound': '❌ Canal {{channels}} no encontrado',
   // Ejemplo de sintaxis

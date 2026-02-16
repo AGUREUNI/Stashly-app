@@ -1,4 +1,5 @@
 import type { WebClient } from '@slack/web-api';
+import type { SlackWebClientExtended } from '../types';
 import type { Messages, MessageKey, SupportedLocale } from './types';
 import ja from './locales/ja';
 import en from './locales/en';
@@ -67,13 +68,25 @@ export async function getUserLocale(client: WebClient, userId: string): Promise<
     return cached.locale;
   }
 
-  // サイズ上限到達時にスイープ
+  // サイズ上限到達時にスイープ → まだ超過ならLRU（最も古いエントリから削除）
   if (localeCache.size >= MAX_CACHE_SIZE) {
     sweepExpiredLocaleCache();
+    if (localeCache.size >= MAX_CACHE_SIZE) {
+      // 最も古い expiresAt のエントリを削除（LRU方式）
+      let oldestKey: string | null = null;
+      let oldestExpires = Infinity;
+      for (const [key, value] of localeCache) {
+        if (value.expiresAt < oldestExpires) {
+          oldestExpires = value.expiresAt;
+          oldestKey = key;
+        }
+      }
+      if (oldestKey) localeCache.delete(oldestKey);
+    }
   }
 
   try {
-    const result = await (client as any).users.info({
+    const result = await (client as unknown as SlackWebClientExtended).users.info({
       user: userId,
       include_locale: true,
     });
@@ -107,6 +120,7 @@ export function resolveLocale(slackLocale: string): SupportedLocale {
 
   // "en-US" → "en" のように言語コード部分を抽出
   const lang = slackLocale.split('-')[0].toLowerCase();
+  if (!lang) return DEFAULT_LOCALE;
 
   if (SUPPORTED_LOCALES.has(lang)) {
     return lang as SupportedLocale;

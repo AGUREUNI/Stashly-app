@@ -1,6 +1,9 @@
 /** ロックのTTL（3分） */
 const LOCK_TTL_MS = 3 * 60 * 1000;
 
+/** 定期クリーンアップ間隔（60秒） */
+const CLEANUP_INTERVAL_MS = 60_000;
+
 interface LockEntry {
   timestamp: number;
 }
@@ -11,32 +14,51 @@ interface LockEntry {
  */
 class LockManager {
   private locks = new Map<string, LockEntry>();
+  private cleanupTimer: ReturnType<typeof setInterval> | null = null;
+
+  constructor() {
+    this.cleanupTimer = setInterval(() => this.cleanup(), CLEANUP_INTERVAL_MS);
+  }
 
   /**
-   * ロックを取得する
+   * ロックを取得する（アトミック操作）
    * @returns true: 取得成功, false: 既にロックされている
    */
-  acquire(emoji: string): boolean {
-    this.cleanup();
+  acquire(key: string): boolean {
+    const now = Date.now();
+    const existing = this.locks.get(key);
 
-    if (this.locks.has(emoji)) {
+    // 既存ロックがTTL内ならば取得失敗
+    if (existing && now - existing.timestamp <= LOCK_TTL_MS) {
       return false;
     }
 
-    this.locks.set(emoji, { timestamp: Date.now() });
+    // TTL切れ or 存在しない → ロック取得
+    this.locks.set(key, { timestamp: now });
     return true;
   }
 
   /**
    * ロックを解除する
    */
-  release(emoji: string): void {
-    this.locks.delete(emoji);
+  release(key: string): void {
+    this.locks.delete(key);
   }
 
-  /** テスト用: 全ロックをクリア */
+  /**
+   * シャットダウン時にクリーンアップタイマーを停止
+   */
+  shutdown(): void {
+    if (this.cleanupTimer) {
+      clearInterval(this.cleanupTimer);
+      this.cleanupTimer = null;
+    }
+  }
+
+  /** テスト用: 全ロックをクリアし、タイマーも停止 */
   _clearForTest(): void {
     this.locks.clear();
+    this.shutdown();
   }
 
   /**

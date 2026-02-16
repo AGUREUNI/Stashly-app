@@ -45,6 +45,44 @@ export interface CollectionResult {
   skippedChannels: ChannelInfo[];
 }
 
+/**
+ * Slack WebClient 拡張型定義
+ * Bolt型定義に含まれないCanvas API等のメソッドを定義
+ */
+export interface SlackWebClientExtended {
+  canvases: {
+    create(params: {
+      title: string;
+      channel_id: string;
+      document_content: { type: 'markdown'; markdown: string };
+    }): Promise<{ canvas_id?: string; canvas_url?: string }>;
+    edit(params: {
+      canvas_id: string;
+      changes: Array<{
+        operation: 'insert_at_end';
+        document_content: { type: 'markdown'; markdown: string };
+      }>;
+    }): Promise<{ ok?: boolean }>;
+  };
+  files: {
+    list(params: {
+      types: string;
+      channel: string;
+      limit: number;
+      cursor?: string;
+    }): Promise<{
+      files?: Array<{ id: string; title: string; updated?: number }>;
+      response_metadata?: { next_cursor?: string };
+    }>;
+  };
+  users: {
+    info(params: {
+      user: string;
+      include_locale?: boolean;
+    }): Promise<{ user?: { locale?: string } }>;
+  };
+}
+
 /** エラー種別 */
 export type ErrorKind =
   | 'PARSE_ERROR'

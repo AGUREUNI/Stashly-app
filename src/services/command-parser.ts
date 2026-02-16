@@ -5,6 +5,9 @@ import type { SupportedLocale } from '../i18n';
 /** 期間指定の上限（日） */
 const MAX_PERIOD_DAYS = 365;
 
+/** 入力テキストの最大長 */
+const MAX_INPUT_LENGTH = 500;
+
 /** チャンネル参照パターン（Slack自動変換）: <#C1234|channel-name> */
 const LINKED_CHANNEL_PATTERN = /<#(C[A-Z0-9]+)\|[^>]*>/g;
 
@@ -48,6 +51,10 @@ export function parseCommand(text: string, locale: SupportedLocale): ParsedComma
 
   if (!trimmed) {
     throw new AppError('NO_EMOJI', t(locale, 'error.noEmoji'));
+  }
+
+  if (trimmed.length > MAX_INPUT_LENGTH) {
+    throw new AppError('PARSE_ERROR', t(locale, 'error.inputTooLong'));
   }
 
   // トークンに分割

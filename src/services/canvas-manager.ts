@@ -1,6 +1,10 @@
 import type { WebClient } from '@slack/web-api';
 import { CanvasInfo, AppError } from '../types';
+import type { SlackWebClientExtended } from '../types';
 import { callWithRetry } from './slack-api';
+
+/** files.list の1ページあたりの取得上限 */
+const FILES_LIST_LIMIT = 100;
 
 /**
  * Canvasタイトルを生成
@@ -27,10 +31,10 @@ export async function findCanvas(
 
   do {
     const result = await callWithRetry<any>(() =>
-      (client as any).files.list({
+      (client as unknown as SlackWebClientExtended).files.list({
         types: 'canvas',
         channel: channelId,
-        limit: 100,
+        limit: FILES_LIST_LIMIT,
         cursor,
       }),
     );
@@ -72,7 +76,7 @@ export async function createCanvas(
   const title = getCanvasTitle(emoji);
 
   const result = await callWithRetry<any>(() =>
-    (client as any).canvases.create({
+    (client as unknown as SlackWebClientExtended).canvases.create({
       title,
       channel_id: channelId,
       document_content: {
@@ -104,7 +108,7 @@ export async function appendToCanvas(
   markdownContent: string,
 ): Promise<void> {
   await callWithRetry(() =>
-    (client as any).canvases.edit({
+    (client as unknown as SlackWebClientExtended).canvases.edit({
       canvas_id: canvasId,
       changes: [
         {
