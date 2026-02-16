@@ -140,6 +140,21 @@ describe('callWithRetry', () => {
       kind: 'UNKNOWN',
     });
   });
+
+  it('should timeout after 30 seconds', async () => {
+    // 永遠に解決しないPromiseを返す関数
+    const fn = vi.fn().mockImplementation(
+      () => new Promise(() => {}), // never resolves
+    );
+
+    const promise = callWithRetry(fn).catch((e: unknown) => e);
+    // 30秒のタイムアウトを発火
+    await vi.advanceTimersByTimeAsync(30_000);
+
+    const error = await promise;
+    expect(error).toBeInstanceOf(AppError);
+    expect((error as AppError).kind).toBe('UNKNOWN');
+  });
 });
 
 describe('fetchAllPages', () => {
@@ -179,6 +194,19 @@ describe('fetchAllPages', () => {
     const fetcher = vi.fn().mockResolvedValue({ items: [], nextCursor: undefined });
     const result = await fetchAllPages(fetcher);
     expect(result).toEqual([]);
+  });
+
+  it('should respect MAX_TOTAL_ITEMS (10000) limit', async () => {
+    // 各ページで5000件ずつ返す → 2ページ目で10000件到達 → 3ページ目は呼ばれない
+    const page5000 = Array.from({ length: 5000 }, (_, i) => i);
+    const fetcher = vi.fn()
+      .mockResolvedValueOnce({ items: page5000, nextCursor: 'page2' })
+      .mockResolvedValueOnce({ items: page5000, nextCursor: 'page3' })
+      .mockResolvedValueOnce({ items: [99999], nextCursor: undefined });
+
+    const result = await fetchAllPages(fetcher);
+    expect(result.length).toBe(10000);
+    expect(fetcher).toHaveBeenCalledTimes(2); // 3ページ目は呼ばれない
   });
 });
 

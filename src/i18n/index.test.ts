@@ -88,6 +88,10 @@ describe('resolveLocale()', () => {
   it('should return default locale for empty string', () => {
     expect(resolveLocale('')).toBe('ja');
   });
+
+  it('should return default locale for "-US" (empty lang part)', () => {
+    expect(resolveLocale('-US')).toBe('ja');
+  });
 });
 
 // ---- 全locale鍵検証 ----
@@ -167,6 +171,26 @@ describe('getUserLocale()', () => {
 
     const locale = await getUserLocale(client, 'U000');
     expect(locale).toBe('ja');
+  });
+
+  it('should evict oldest entry when cache is full with valid entries (LRU)', async () => {
+    const client = createMockClient();
+    // 1000件のキャッシュを満杯にする（全てTTL内）
+    for (let i = 0; i < 1000; i++) {
+      client.users.info.mockResolvedValueOnce({ user: { locale: 'en-US' } });
+      await getUserLocale(client, `UFILL${i}`);
+    }
+
+    // 1001件目を追加 → LRU evictionが発動するはず
+    client.users.info.mockResolvedValueOnce({ user: { locale: 'fr-FR' } });
+    await getUserLocale(client, 'UNEW');
+
+    // 最古のエントリ UFILL0 が削除され、再度API呼び出しが必要
+    client.users.info.mockResolvedValueOnce({ user: { locale: 'ja-JP' } });
+    const callsBefore = client.users.info.mock.calls.length;
+    await getUserLocale(client, 'UFILL0');
+    const callsAfter = client.users.info.mock.calls.length;
+    expect(callsAfter).toBe(callsBefore + 1); // キャッシュにないのでAPIが呼ばれる
   });
 
   it('should re-fetch after cache expires', async () => {

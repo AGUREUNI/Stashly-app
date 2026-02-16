@@ -132,6 +132,20 @@ describe('parseCommand', () => {
     });
   });
 
+  // ---- 入力長制限 ----
+  describe('input length validation', () => {
+    it('should throw PARSE_ERROR for input exceeding 500 characters', () => {
+      const longInput = ':check: ' + 'a'.repeat(500); // 508 chars total > 500
+      expect(() => parseCommand(longInput, 'ja')).toThrow(AppError);
+      try {
+        parseCommand(longInput, 'ja');
+      } catch (e) {
+        expect((e as AppError).kind).toBe('PARSE_ERROR');
+        expect((e as AppError).message).toContain('500');
+      }
+    });
+  });
+
   // ---- 複合テスト ----
   describe('combined arguments', () => {
     it('should parse emoji + channels + period', () => {

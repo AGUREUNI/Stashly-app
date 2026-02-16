@@ -271,11 +271,12 @@ async function getChannelInfo(client: WebClient, channelId: string): Promise<Cha
 }
 
 /**
- * メッセージのパーマリンクを取得
- */
-/**
  * チャンネル名からチャンネルIDを解決する
- * Bot参加チャンネル一覧から名前でマッチング
+ * conversations.list で全チャンネルの名前→IDマッピングを構築し、
+ * 指定された名前リストをIDに変換する。見つからない名前は notFound に格納。
+ * @param client - Slack WebClient
+ * @param names - 解決対象のチャンネル名リスト
+ * @returns resolved（解決済みチャンネルID配列）と notFound（未解決チャンネル名配列）
  */
 export async function resolveChannelNames(
   client: WebClient,
