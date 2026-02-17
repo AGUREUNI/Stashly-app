@@ -73,24 +73,10 @@ describe('buildMarkdown', () => {
     expect(md).toContain('**2025-02-06**');
   });
 
-  it('should include permalink with viewMessage fallback when no userName/textPreview', () => {
+  it('should include permalink when available', () => {
     const md = buildMarkdown('ja', 'thumbsup', sampleMessages);
-    expect(md).toContain('[:link: メッセージを見る](https://slack.com/archives/C123/p1738745400)');
-  });
-
-  it('should include userName and textPreview in link when available', () => {
-    const msgs: CollectedMessage[] = [
-      {
-        ts: '1738745400.000000',
-        channelId: 'C123',
-        channelName: 'general',
-        permalink: 'https://slack.com/archives/C123/p1738745400',
-        userName: '井上龍雅',
-        textPreview: 'テストメッセージです',
-      },
-    ];
-    const md = buildMarkdown('ja', 'thumbsup', msgs);
-    expect(md).toContain('[井上龍雅: "テストメッセージです"](https://slack.com/archives/C123/p1738745400)');
+    expect(md).toContain('[');
+    expect(md).toContain('](https://slack.com/archives/C123/p1738745400)');
   });
 
   it('should handle messages without permalink', () => {

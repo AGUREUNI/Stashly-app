@@ -4,7 +4,6 @@ import { createMockClient } from '../../test-helpers/mock-client';
 import { createMockCommand } from '../../test-helpers/mock-command';
 import { lockManager } from '../../services/lock-manager';
 import { _clearLocaleCacheForTest } from '../../i18n';
-import { _clearUserNameCacheForTest } from '../../services/message-collector';
 import { AppError } from '../../types';
 
 /**
@@ -26,8 +25,6 @@ function setupBotChannels(client: any, channelIds: string[]) {
 function setupHistoryWithReactions(client: any, emoji: string, count: number, channelId = 'C_CURRENT') {
   const messages = Array.from({ length: count }, (_, i) => ({
     ts: `1700000${String(i).padStart(3, '0')}.000000`,
-    user: 'U_OTHER',
-    text: `Test message ${i}`,
     reactions: [{ name: emoji, count: 1, users: ['U_OTHER'] }],
   }));
   client.conversations.history.mockResolvedValue({
@@ -54,10 +51,9 @@ describe('handleCanvasCollect 統合テスト', () => {
     lockManager._clearForTest();
     _clearLocaleCacheForTest();
     _clearUserRateLimitForTest();
-    _clearUserNameCacheForTest();
 
-    // デフォルト: 英語locale + ユーザー名
-    client.users.info.mockResolvedValue({ user: { locale: 'en-US', profile: { display_name: 'TestUser', real_name: 'Test User' } } });
+    // デフォルト: 英語locale
+    client.users.info.mockResolvedValue({ user: { locale: 'en-US' } });
     // デフォルト: Bot参加チャンネル = C_CURRENT
     setupBotChannels(client, ['C_CURRENT']);
     // デフォルト: チャンネル名
@@ -346,8 +342,8 @@ describe('handleCanvasCollect 統合テスト', () => {
 
   it('#13 日本語locale → 日本語メッセージ、Canvasタイトルは英語固定', async () => {
     const command = createMockCommand({ text: ':thumbsup:' });
-    // 日本語locale + ユーザー名
-    client.users.info.mockResolvedValue({ user: { locale: 'ja-JP', profile: { display_name: 'テストユーザー', real_name: 'Test User' } } });
+    // 日本語locale
+    client.users.info.mockResolvedValue({ user: { locale: 'ja-JP' } });
     setupHistoryWithReactions(client, 'thumbsup', 2);
 
     await handleCanvasCollect({ command, ack, client });
