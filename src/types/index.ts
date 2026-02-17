@@ -94,6 +94,7 @@ export type ErrorKind =
   | 'CANVAS_EDIT_FAILED'
   | 'RATE_LIMITED'
   | 'FATAL_API_ERROR'
+  | 'INVALID_TEAM_DOMAIN'
   | 'UNKNOWN';
 
 /** アプリケーションエラー */
