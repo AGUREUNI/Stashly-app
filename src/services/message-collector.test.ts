@@ -1,6 +1,47 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { collectMessages, resolveChannelNames } from './message-collector';
+import { collectMessages, resolveChannelNames, getUserDisplayName, _clearUserNameCacheForTest } from './message-collector';
 import { createMockClient } from '../test-helpers/mock-client';
+
+describe('getUserDisplayName', () => {
+  beforeEach(() => {
+    _clearUserNameCacheForTest();
+  });
+
+  it('should return display_name from profile', async () => {
+    const client = createMockClient();
+    client.users.info.mockResolvedValue({
+      user: { profile: { display_name: 'TatsugaDisplay', real_name: 'Tatsuga Inoue' }, real_name: 'Tatsuga Inoue' },
+    });
+    const name = await getUserDisplayName(client, 'U123');
+    expect(name).toBe('TatsugaDisplay');
+  });
+
+  it('should fallback to real_name when display_name is empty', async () => {
+    const client = createMockClient();
+    client.users.info.mockResolvedValue({
+      user: { profile: { display_name: '', real_name: 'Tatsuga Inoue' }, real_name: 'Tatsuga Inoue' },
+    });
+    const name = await getUserDisplayName(client, 'U123');
+    expect(name).toBe('Tatsuga Inoue');
+  });
+
+  it('should fallback to userId on API error', async () => {
+    const client = createMockClient();
+    client.users.info.mockRejectedValue(new Error('api_error'));
+    const name = await getUserDisplayName(client, 'U_FALLBACK');
+    expect(name).toBe('U_FALLBACK');
+  });
+
+  it('should cache results', async () => {
+    const client = createMockClient();
+    client.users.info.mockResolvedValue({
+      user: { profile: { display_name: 'CachedUser' } },
+    });
+    await getUserDisplayName(client, 'U_CACHE');
+    await getUserDisplayName(client, 'U_CACHE');
+    expect(client.users.info).toHaveBeenCalledTimes(1);
+  });
+});
 
 describe('collectMessages', () => {
   it('should collect messages with matching reactions', async () => {
@@ -169,6 +210,55 @@ describe('collectMessages', () => {
     const result = await collectMessages(client, 'thumbsup', [], null);
     expect(result.messages).toHaveLength(0);
     expect(result.skippedChannels).toHaveLength(0);
+  });
+
+  it('should include userName and textPreview in collected messages', async () => {
+    const client = createMockClient();
+    _clearUserNameCacheForTest();
+    client.users.conversations.mockResolvedValue({
+      channels: [{ id: 'C123' }],
+      response_metadata: {},
+    });
+    client.conversations.info.mockResolvedValue({ channel: { name: 'general' } });
+    client.conversations.history.mockResolvedValue({
+      messages: [
+        { ts: '1000.000', user: 'U_AUTHOR', text: 'Hello world!', reactions: [{ name: 'thumbsup', count: 1 }] },
+      ],
+      response_metadata: {},
+    });
+    client.chat.getPermalink.mockResolvedValue({ permalink: 'https://link' });
+    client.users.info.mockResolvedValue({
+      user: { profile: { display_name: 'TestUser', real_name: 'Test User' }, locale: 'ja-JP' },
+    });
+
+    const result = await collectMessages(client, 'thumbsup', ['C123'], null);
+    expect(result.messages).toHaveLength(1);
+    expect(result.messages[0].userName).toBe('TestUser');
+    expect(result.messages[0].textPreview).toBe('Hello world!');
+  });
+
+  it('should truncate textPreview to 80 characters', async () => {
+    const client = createMockClient();
+    _clearUserNameCacheForTest();
+    client.users.conversations.mockResolvedValue({
+      channels: [{ id: 'C123' }],
+      response_metadata: {},
+    });
+    client.conversations.info.mockResolvedValue({ channel: { name: 'general' } });
+    const longText = 'A'.repeat(100);
+    client.conversations.history.mockResolvedValue({
+      messages: [
+        { ts: '1000.000', user: 'U1', text: longText, reactions: [{ name: 'star', count: 1 }] },
+      ],
+      response_metadata: {},
+    });
+    client.chat.getPermalink.mockResolvedValue({ permalink: 'https://link' });
+    client.users.info.mockResolvedValue({
+      user: { profile: { display_name: 'User1' }, locale: 'ja-JP' },
+    });
+
+    const result = await collectMessages(client, 'star', ['C123'], null);
+    expect(result.messages[0].textPreview).toBe('A'.repeat(80) + '…');
   });
 
   it('should handle permalink failure gracefully', async () => {

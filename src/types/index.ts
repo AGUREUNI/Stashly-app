@@ -20,6 +20,10 @@ export interface CollectedMessage {
   channelName: string;
   /** パーマリンク */
   permalink: string;
+  /** 投稿者の表示名 */
+  userName?: string;
+  /** メッセージ本文プレビュー（最大80文字） */
+  textPreview?: string;
 }
 
 /** チャンネル情報 */
@@ -79,7 +83,16 @@ export interface SlackWebClientExtended {
     info(params: {
       user: string;
       include_locale?: boolean;
-    }): Promise<{ user?: { locale?: string } }>;
+    }): Promise<{
+      user?: {
+        locale?: string;
+        profile?: {
+          display_name?: string;
+          real_name?: string;
+        };
+        real_name?: string;
+      };
+    }>;
   };
 }
 
@@ -94,6 +107,7 @@ export type ErrorKind =
   | 'CANVAS_EDIT_FAILED'
   | 'RATE_LIMITED'
   | 'FATAL_API_ERROR'
+  | 'INVALID_TEAM_DOMAIN'
   | 'UNKNOWN';
 
 /** アプリケーションエラー */

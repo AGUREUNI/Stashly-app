@@ -1,10 +1,79 @@
 import type { WebClient } from '@slack/web-api';
-import { CollectedMessage, CollectionResult, ChannelInfo, AppError } from '../types';
+import { CollectedMessage, CollectionResult, ChannelInfo, AppError, SlackWebClientExtended } from '../types';
 import { callWithRetry, isSkippableError } from './slack-api';
 import { daysAgoToSlackTs } from '../utils/date';
 
 /** チャンネルあたりの最大収集件数 */
 const MAX_MESSAGES_PER_CHANNEL = 500;
+
+/** テキストプレビューの最大文字数 */
+const MAX_TEXT_PREVIEW_LENGTH = 80;
+
+/** ユーザー名キャッシュ: userId → { name, expiresAt } */
+const userNameCache = new Map<string, { name: string; expiresAt: number }>();
+
+/** キャッシュTTL: 30分 */
+const USER_NAME_CACHE_TTL_MS = 30 * 60 * 1000;
+
+/** キャッシュサイズ上限 */
+const MAX_USER_NAME_CACHE_SIZE = 1000;
+
+/** テスト用: ユーザー名キャッシュをクリア */
+export function _clearUserNameCacheForTest(): void {
+  userNameCache.clear();
+}
+
+/**
+ * ユーザーの表示名を取得する（キャッシュ付き）
+ * display_name → real_name → userId の優先順でフォールバック
+ */
+export async function getUserDisplayName(client: WebClient, userId: string): Promise<string> {
+  // キャッシュチェック
+  const cached = userNameCache.get(userId);
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.name;
+  }
+
+  // サイズ上限到達時にLRU（最も古いエントリから削除）
+  if (userNameCache.size >= MAX_USER_NAME_CACHE_SIZE) {
+    let oldestKey: string | null = null;
+    let oldestExpires = Infinity;
+    for (const [key, value] of userNameCache) {
+      if (value.expiresAt < oldestExpires) {
+        oldestExpires = value.expiresAt;
+        oldestKey = key;
+      }
+    }
+    if (oldestKey) userNameCache.delete(oldestKey);
+  }
+
+  try {
+    const result = await (client as unknown as SlackWebClientExtended).users.info({
+      user: userId,
+    });
+
+    const profile = result.user?.profile;
+    const name = profile?.display_name || profile?.real_name || result.user?.real_name || userId;
+
+    userNameCache.set(userId, {
+      name,
+      expiresAt: Date.now() + USER_NAME_CACHE_TTL_MS,
+    });
+
+    return name;
+  } catch {
+    return userId;
+  }
+}
+
+/**
+ * テキストプレビューを生成（最大80文字でトランケート）
+ */
+function truncateText(text: string | undefined): string | undefined {
+  if (!text) return undefined;
+  if (text.length <= MAX_TEXT_PREVIEW_LENGTH) return text;
+  return text.slice(0, MAX_TEXT_PREVIEW_LENGTH) + '…';
+}
 
 /**
  * 指定チャンネル群から絵文字リアクション付きメッセージを収集する
@@ -103,11 +172,15 @@ async function collectFromChannel(
       // メインメッセージの絵文字チェック
       if (hasReaction(msg, emoji)) {
         const permalink = await getPermalink(client, channelId, msg.ts);
+        const userName = msg.user ? await getUserDisplayName(client, msg.user) : undefined;
+        const textPreview = truncateText(msg.text);
         messages.push({
           ts: msg.ts,
           channelId,
           channelName,
           permalink,
+          userName,
+          textPreview,
         });
       }
 
@@ -187,11 +260,15 @@ async function collectFromThread(
 
       if (hasReaction(msg, emoji)) {
         const permalink = await getPermalink(client, channelId, msg.ts);
+        const userName = msg.user ? await getUserDisplayName(client, msg.user) : undefined;
+        const textPreview = truncateText(msg.text);
         messages.push({
           ts: msg.ts,
           channelId,
           channelName,
           permalink,
+          userName,
+          textPreview,
         });
       }
     }

@@ -44,7 +44,11 @@ export function buildMarkdown(locale: SupportedLocale, emoji: string, messages: 
         const timeStr = `${h}:${m} (UTC)`;
 
         if (msg.permalink) {
-          lines.push(`- ${timeStr} [${t(locale, 'markdown.viewMessage')}](${msg.permalink})`);
+          if (msg.userName && msg.textPreview) {
+            lines.push(`- ${timeStr} [${msg.userName}: "${msg.textPreview}"](${msg.permalink})`);
+          } else {
+            lines.push(`- ${timeStr} [${t(locale, 'markdown.viewMessage')}](${msg.permalink})`);
+          }
         } else {
           lines.push(`- ${timeStr} ${t(locale, 'markdown.linkFailed')}`);
         }
