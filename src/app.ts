@@ -110,7 +110,7 @@ if (isOAuthMode) {
       : `HTTP on port ${port}`;
   console.log(`⚡ Stashly is running (${mode})`);
 })().catch(err => {
-  console.error('Fatal startup error:', err);
+  console.error('Fatal startup error:', err instanceof Error ? err.message : 'Unknown error');
   process.exit(1);
 });
 
@@ -125,7 +125,7 @@ const shutdown = async (signal: string) => {
       await prisma.$disconnect();
     }
   } catch (error) {
-    console.error('Error during shutdown:', error);
+    console.error('Error during shutdown:', error instanceof Error ? error.message : 'Unknown error');
   }
   process.exit(0);
 };
@@ -133,5 +133,5 @@ const shutdown = async (signal: string) => {
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 process.on('SIGINT', () => shutdown('SIGINT'));
 process.on('unhandledRejection', (reason) => {
-  console.error('Unhandled Rejection:', reason);
+  console.error('Unhandled Rejection:', reason instanceof Error ? reason.message : 'Unknown rejection');
 });

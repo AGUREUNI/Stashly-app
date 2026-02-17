@@ -12,7 +12,9 @@
       "WebSearch",
       "mcp__filesystem__read_multiple_files",
       "Bash(npm test:*)",
-      "Bash(npm run test:coverage:*)"
+      "Bash(npm run test:coverage:*)",
+      "mcp__filesystem__directory_tree",
+      "Bash(npm audit:*)"
     ]
   }
 }

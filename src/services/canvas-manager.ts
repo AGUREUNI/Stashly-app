@@ -3,6 +3,13 @@ import { CanvasInfo, AppError } from '../types';
 import type { SlackWebClientExtended } from '../types';
 import { callWithRetry } from './slack-api';
 
+/** teamDomainのバリデーション（英小文字・数字・ハイフンのみ許可） */
+function validateTeamDomain(teamDomain: string): void {
+  if (!/^[a-z0-9-]+$/i.test(teamDomain)) {
+    throw new AppError('INVALID_TEAM_DOMAIN', 'Invalid team domain format');
+  }
+}
+
 /** files.list の1ページあたりの取得上限 */
 const FILES_LIST_LIMIT = 100;
 
@@ -73,6 +80,7 @@ export async function createCanvas(
   teamId: string,
   teamDomain: string,
 ): Promise<{ canvasId: string; canvasUrl: string }> {
+  validateTeamDomain(teamDomain);
   const title = getCanvasTitle(emoji);
 
   const result = await callWithRetry<any>(() =>
@@ -135,6 +143,7 @@ export async function upsertCanvas(
   teamId: string,
   teamDomain: string,
 ): Promise<{ canvasUrl: string; isNew: boolean }> {
+  validateTeamDomain(teamDomain);
   const existing = await findCanvas(client, channelId, emoji);
 
   if (existing) {

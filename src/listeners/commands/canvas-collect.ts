@@ -178,7 +178,7 @@ export async function handleCanvasCollect({ command, ack, client }: {
         await sendEphemeral(msg, buildErrorBlocks(msg));
       }
     } catch (sendError) {
-      console.error('Failed to send error ephemeral:', sendError);
+      console.error('Failed to send error ephemeral:', sendError instanceof Error ? sendError.message : 'Unknown error');
     }
   }
 }

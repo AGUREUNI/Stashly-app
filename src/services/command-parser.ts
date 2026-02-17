@@ -11,8 +11,8 @@ const MAX_INPUT_LENGTH = 500;
 /** チャンネル参照パターン（Slack自動変換）: <#C1234|channel-name> */
 const LINKED_CHANNEL_PATTERN = /<#(C[A-Z0-9]+)\|[^>]*>/g;
 
-/** プレーンテキストのチャンネル参照: #channel-name */
-const PLAIN_CHANNEL_PATTERN = /#([\w-]+)/g;
+/** プレーンテキストのチャンネル参照: #channel-name（Slack仕様: 小文字英数字・ハイフン・アンダースコア、最大80文字） */
+const PLAIN_CHANNEL_PATTERN = /#([a-z0-9_-]{1,80})/g;
 
 /** 絵文字パターン: :emoji_name: */
 const EMOJI_PATTERN = /^:([^:\s]+):$/;
