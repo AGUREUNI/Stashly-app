@@ -3,7 +3,7 @@ import type { Installation, InstallationQuery } from '@slack/oauth';
 import type { InstallationStore } from '@slack/oauth';
 import { encrypt, decrypt } from './crypto';
 
-export const prisma = new PrismaClient();
+export const prisma = new PrismaClient({ datasourceUrl: process.env.DATABASE_URL });
 
 export const installationStore: InstallationStore = {
   async storeInstallation<AuthVersion extends 'v1' | 'v2'>(
