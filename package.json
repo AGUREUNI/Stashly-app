@@ -5,7 +5,7 @@
   "main": "dist/app.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/app.js",
+    "start": "prisma migrate deploy && node dist/app.js",
     "dev": "npx ts-node src/app.ts",
     "test": "vitest run",
     "test:watch": "vitest",
