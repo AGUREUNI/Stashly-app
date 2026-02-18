@@ -1,0 +1,72 @@
+name: "🐛 Bug Report"
+description: Report a bug or unexpected behavior in Stashly
+labels: ["bug", "beta-feedback"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve Stashly! Please fill in as much detail as possible.
+
+  - type: input
+    id: command
+    attributes:
+      label: Command you ran
+      description: Copy the exact slash command you used
+      placeholder: "/canvas-collect :thumbsup: #general last 7 days"
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+      description: What did you think would happen?
+      placeholder: "A Canvas should have been created with collected messages..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: What actually happened
+      description: Describe what happened instead. Include any error messages shown in Slack.
+      placeholder: "Got an error message: ..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: slack_plan
+    attributes:
+      label: Slack Plan
+      options:
+        - Pro
+        - Business+
+        - Enterprise Grid
+        - Free (note: Canvas not available on Free plan)
+        - Not sure
+    validations:
+      required: true
+
+  - type: dropdown
+    id: language
+    attributes:
+      label: Your Slack language setting
+      options:
+        - English
+        - Japanese (日本語)
+        - Hindi (हिन्दी)
+        - French (Français)
+        - Spanish (Español)
+        - Chinese (中文)
+        - Korean (한국어)
+        - Other
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Any other details that might help (channel type, number of messages, etc.)
+    validations:
+      required: false

@@ -1,9 +1,18 @@
 node_modules/
 dist/
 .env
+.claude/settings.local.json
 *.js.map
 *.d.ts
 !src/**/*.d.ts
 prisma/*.db
 coverage/
 nul
+
+# 内部ドキュメント（ローカルのみ）
+CLAUDE.md
+implementation_plan.md
+marketing_strategy.md
+review-findings.md
+slack_canvas_collector_spec_v1_4.md
+beta-test-checklist.md

@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 General Feedback (Japanese)
+    url: https://github.com/AGUREUNI/Stashly-app/discussions
+    about: ご意見・感想・使い心地などは Discussions へどうぞ
+  - name: 💬 General Discussion (English)
+    url: https://github.com/AGUREUNI/Stashly-app/discussions
+    about: Share general feedback or ask questions in Discussions

@@ -1,0 +1,42 @@
+name: "💡 Feature Request"
+description: Suggest a new feature or improvement for Stashly
+labels: ["enhancement", "beta-feedback"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for your idea! Tell us what would make Stashly more useful for you.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Describe the situation where this would help you
+      placeholder: "When I try to... I find it difficult because..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: What would you like to see?
+      description: Describe your ideal solution or feature
+      placeholder: "It would be great if Stashly could..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you've considered
+      description: Any other approaches you've thought of?
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Any mockups, examples, or other context
+    validations:
+      required: false
