@@ -29,6 +29,10 @@ const fr: Messages = {
   'error.channelNotFound': '❌ Canal {{channels}} introuvable',
   // Exemple de syntaxe
   'command.periodExample': 'derniers 7 jours',
+  // Erreurs de plan
+  'error.planMultiChannel': '❌ La collecte multi-canal est une fonctionnalité du plan Pro\nPassez au plan Pro pour utiliser cette fonctionnalité',
+  'error.planPeriodTooLong': '❌ La collecte au-delà des 30 derniers jours est une fonctionnalité du plan Pro\nPassez au plan Pro pour collecter sur n\'importe quelle période',
+  'error.planCanvasAppend': '❌ L\'ajout à un stash (Canvas) existant n\'est pas disponible dans le plan Free\nPassez au plan Pro pour continuer à enrichir votre collection',
   // Erreurs API
   'error.missingScope': '❌ L\'application manque de permissions\nVeuillez demander à un administrateur de réinstaller',
   'error.authInvalid': '❌ L\'authentification de l\'application est invalide\nVeuillez demander à un administrateur de réinstaller',

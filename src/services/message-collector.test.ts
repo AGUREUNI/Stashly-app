@@ -21,7 +21,7 @@ describe('collectMessages', () => {
     });
     client.chat.getPermalink.mockResolvedValue({ permalink: 'https://link' });
 
-    const result = await collectMessages(client, 'thumbsup', ['C123'], null);
+    const result = await collectMessages(client, 'thumbsup', ['C123'], { periodDays: null, maxMessages: 500 });
     expect(result.messages).toHaveLength(2);
     expect(result.messages[0].ts).toBe('1000.000');
     expect(result.messages[1].ts).toBe('3000.000');
@@ -40,7 +40,7 @@ describe('collectMessages', () => {
       response_metadata: {},
     });
 
-    const result = await collectMessages(client, 'thumbsup', ['C999'], null);
+    const result = await collectMessages(client, 'thumbsup', ['C999'], { periodDays: null, maxMessages: 500 });
     expect(result.messages).toHaveLength(0);
     expect(result.skippedChannels).toHaveLength(1);
     expect(result.skippedChannels[0].name).toBe('secret');
@@ -60,7 +60,7 @@ describe('collectMessages', () => {
       response_metadata: {},
     });
 
-    const result = await collectMessages(client, 'thumbsup', ['C123'], null);
+    const result = await collectMessages(client, 'thumbsup', ['C123'], { periodDays: null, maxMessages: 500 });
     expect(result.messages).toHaveLength(0);
   });
 
@@ -84,7 +84,7 @@ describe('collectMessages', () => {
       });
     client.chat.getPermalink.mockResolvedValue({ permalink: 'https://link' });
 
-    const result = await collectMessages(client, 'star', ['C1', 'C2'], null);
+    const result = await collectMessages(client, 'star', ['C1', 'C2'], { periodDays: null, maxMessages: 500 });
     expect(result.messages[0].ts).toBe('1000.000');
     expect(result.messages[1].ts).toBe('3000.000');
   });
@@ -112,7 +112,7 @@ describe('collectMessages', () => {
     });
     client.chat.getPermalink.mockResolvedValue({ permalink: 'https://link' });
 
-    const result = await collectMessages(client, 'thumbsup', ['C123'], null);
+    const result = await collectMessages(client, 'thumbsup', ['C123'], { periodDays: null, maxMessages: 500 });
     // Only thread reply with thumbsup should be collected (parent has no reaction)
     expect(result.messages).toHaveLength(1);
     expect(result.messages[0].ts).toBe('1001.000');
@@ -136,7 +136,7 @@ describe('collectMessages', () => {
       });
     client.chat.getPermalink.mockResolvedValue({ permalink: 'https://link' });
 
-    const result = await collectMessages(client, 'star', ['C123'], null);
+    const result = await collectMessages(client, 'star', ['C123'], { periodDays: null, maxMessages: 500 });
     expect(result.messages).toHaveLength(2);
   });
 
@@ -155,7 +155,7 @@ describe('collectMessages', () => {
       response_metadata: {},
     });
 
-    const result = await collectMessages(client, 'thumbsup', ['C123'], null);
+    const result = await collectMessages(client, 'thumbsup', ['C123'], { periodDays: null, maxMessages: 500 });
     expect(result.messages).toHaveLength(0);
   });
 
@@ -166,7 +166,7 @@ describe('collectMessages', () => {
       response_metadata: {},
     });
 
-    const result = await collectMessages(client, 'thumbsup', [], null);
+    const result = await collectMessages(client, 'thumbsup', [], { periodDays: null, maxMessages: 500 });
     expect(result.messages).toHaveLength(0);
     expect(result.skippedChannels).toHaveLength(0);
   });
@@ -186,7 +186,7 @@ describe('collectMessages', () => {
     });
     client.chat.getPermalink.mockRejectedValue(new Error('not found'));
 
-    const result = await collectMessages(client, 'thumbsup', ['C123'], null);
+    const result = await collectMessages(client, 'thumbsup', ['C123'], { periodDays: null, maxMessages: 500 });
     expect(result.messages).toHaveLength(1);
     expect(result.messages[0].permalink).toBe('');
   });

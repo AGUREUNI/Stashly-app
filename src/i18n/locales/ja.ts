@@ -29,6 +29,10 @@ const ja: Messages = {
   'error.channelNotFound': '❌ チャンネル {{channels}} が見つかりません',
   // コマンド構文例
   'command.periodExample': '過去7日',
+  // プランエラー
+  'error.planMultiChannel': '❌ 複数チャンネルの横断収集はProプランの機能です\nProプランにアップグレードするとご利用いただけます',
+  'error.planPeriodTooLong': '❌ 過去30日以上の収集はProプランの機能です\nProプランにアップグレードすると全期間を対象にできます',
+  'error.planCanvasAppend': '❌ Freeプランではすでにあるスタッシュ（Canvas）への追記はできません\nProプランにアップグレードすると追記して蓄積できるようになります',
   // APIエラー
   'error.missingScope': '❌ アプリの権限が不足しています\n管理者に再インストールを依頼してください',
   'error.authInvalid': '❌ アプリの認証が無効です\n管理者に再インストールを依頼してください',

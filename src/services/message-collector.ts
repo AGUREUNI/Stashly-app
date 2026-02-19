@@ -3,8 +3,11 @@ import { CollectedMessage, CollectionResult, ChannelInfo, AppError } from '../ty
 import { callWithRetry, isSkippableError } from './slack-api';
 import { daysAgoToSlackTs } from '../utils/date';
 
-/** チャンネルあたりの最大収集件数 */
-const MAX_MESSAGES_PER_CHANNEL = 500;
+/** collectMessages のオプション */
+export interface CollectMessagesOptions {
+  periodDays: number | null;
+  maxMessages: number;
+}
 
 /**
  * 指定チャンネル群から絵文字リアクション付きメッセージを収集する
@@ -13,8 +16,9 @@ export async function collectMessages(
   client: WebClient,
   emoji: string,
   channelIds: string[],
-  periodDays: number | null,
+  options: CollectMessagesOptions,
 ): Promise<CollectionResult> {
+  const { periodDays, maxMessages } = options;
   const allMessages: CollectedMessage[] = [];
   const channelLimitReached = new Map<string, boolean>();
   const skippedChannels: ChannelInfo[] = [];
@@ -38,6 +42,7 @@ export async function collectMessages(
         emoji,
         channelId,
         periodDays,
+        maxMessages,
       );
       allMessages.push(...messages);
       channelLimitReached.set(channelId, limitReached);
@@ -67,6 +72,7 @@ async function collectFromChannel(
   emoji: string,
   channelId: string,
   periodDays: number | null,
+  maxMessages: number,
 ): Promise<{ messages: CollectedMessage[]; limitReached: boolean }> {
   const channelName = await getChannelName(client, channelId);
   const messages: CollectedMessage[] = [];
@@ -91,7 +97,7 @@ async function collectFromChannel(
     const historyMessages = result.messages ?? [];
 
     for (const msg of historyMessages) {
-      if (messages.length >= MAX_MESSAGES_PER_CHANNEL) {
+      if (messages.length >= maxMessages) {
         limitReached = true;
         shouldContinue = false;
         break;
@@ -119,13 +125,13 @@ async function collectFromChannel(
           channelId,
           channelName,
           msg.ts,
-          MAX_MESSAGES_PER_CHANNEL - messages.length,
+          maxMessages - messages.length,
           oldest,
         );
 
-        if (messages.length + threadMessages.messages.length > MAX_MESSAGES_PER_CHANNEL) {
+        if (messages.length + threadMessages.messages.length > maxMessages) {
           limitReached = true;
-          messages.push(...threadMessages.messages.slice(0, MAX_MESSAGES_PER_CHANNEL - messages.length));
+          messages.push(...threadMessages.messages.slice(0, maxMessages - messages.length));
           shouldContinue = false;
           break;
         }

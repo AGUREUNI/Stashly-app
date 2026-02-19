@@ -29,6 +29,10 @@ const ko: Messages = {
   'error.channelNotFound': '❌ 채널 {{channels}}을(를) 찾을 수 없습니다',
   // 명령어 구문 예시
   'command.periodExample': '최근 7일',
+  // 플랜 오류
+  'error.planMultiChannel': '❌ 여러 채널 횡단 수집은 Pro 플랜 기능입니다\nPro 플랜으로 업그레이드하면 사용할 수 있습니다',
+  'error.planPeriodTooLong': '❌ 30일 이상의 수집은 Pro 플랜 기능입니다\nPro 플랜으로 업그레이드하면 전체 기간을 대상으로 할 수 있습니다',
+  'error.planCanvasAppend': '❌ Free 플랜에서는 기존 스태시(Canvas)에 추가할 수 없습니다\nPro 플랜으로 업그레이드하면 계속 누적할 수 있습니다',
   // API 오류
   'error.missingScope': '❌ 앱에 필요한 권한이 없습니다\n관리자에게 재설치를 요청해주세요',
   'error.authInvalid': '❌ 앱 인증이 유효하지 않습니다\n관리자에게 재설치를 요청해주세요',

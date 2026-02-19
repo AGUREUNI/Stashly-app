@@ -6,6 +6,22 @@ datasource db {
   provider = "postgresql"
 }
 
+model WorkspaceSubscription {
+  id        String   @id @default(cuid())
+  teamId    String   @unique @map("team_id")
+  plan      String   @default("free") @map("plan")
+  // 将来のStripe連携用（コメントアウトで準備）
+  // stripeCustomerId     String?   @map("stripe_customer_id")
+  // stripeSubscriptionId String?   @map("stripe_subscription_id")
+  // status               String    @default("active") @map("status")
+  // currentPeriodEnd     DateTime? @map("current_period_end")
+  // cancelAtPeriodEnd    Boolean   @default(false) @map("cancel_at_period_end")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("workspace_subscriptions")
+}
+
 model SlackInstallation {
   id                  String    @id @default(cuid())
   teamId              String    @unique @map("team_id")

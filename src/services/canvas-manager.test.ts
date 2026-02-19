@@ -131,7 +131,7 @@ describe('upsertCanvas', () => {
     expect(result.canvasUrl).toContain('F_NEW');
   });
 
-  it('should append to existing canvas', async () => {
+  it('should append to existing canvas when canAppend is true (default)', async () => {
     const client = createMockClient();
     client.files.list.mockResolvedValue({
       files: [{ id: 'F_EXISTING', title: ':thumbsup: Collection Log', updated: 100 }],
@@ -144,5 +144,52 @@ describe('upsertCanvas', () => {
     expect(result.isNew).toBe(false);
     expect(result.canvasUrl).toContain('F_EXISTING');
     expect(client.canvases.edit).toHaveBeenCalled();
+  });
+
+  it('should create new canvas when canAppend is false and no existing canvas', async () => {
+    const client = createMockClient();
+    client.files.list.mockResolvedValue({ files: [], response_metadata: {} });
+    client.canvases.create.mockResolvedValue({ canvas_id: 'F_NEW' });
+
+    const result = await upsertCanvas(
+      client, 'C123', 'thumbsup', '# New', '---\n# Append', 'T123', 'myteam', false,
+    );
+    expect(result.isNew).toBe(true);
+    expect(result.canvasUrl).toContain('F_NEW');
+  });
+
+  it('should throw AppError when canAppend is false and existing canvas found', async () => {
+    const client = createMockClient();
+    client.files.list.mockResolvedValue({
+      files: [{ id: 'F_EXISTING', title: ':thumbsup: Collection Log', updated: 100 }],
+      response_metadata: {},
+    });
+
+    await expect(
+      upsertCanvas(client, 'C123', 'thumbsup', '# New', '---\n# Append', 'T123', 'myteam', false),
+    ).rejects.toThrow(AppError);
+
+    // Canvas の作成・編集は行われない
+    expect(client.canvases.create).not.toHaveBeenCalled();
+    expect(client.canvases.edit).not.toHaveBeenCalled();
+  });
+
+  it('should include planCanvasAppend messageKey in thrown error', async () => {
+    const client = createMockClient();
+    client.files.list.mockResolvedValue({
+      files: [{ id: 'F_EXISTING', title: ':thumbsup: Collection Log', updated: 100 }],
+      response_metadata: {},
+    });
+
+    let thrownError: AppError | undefined;
+    try {
+      await upsertCanvas(client, 'C123', 'thumbsup', '# New', '---\n# Append', 'T123', 'myteam', false);
+    } catch (e) {
+      thrownError = e as AppError;
+    }
+
+    expect(thrownError).toBeInstanceOf(AppError);
+    expect(thrownError?.messageKey).toBe('error.planCanvasAppend');
+    expect(thrownError?.kind).toBe('PLAN_LIMIT');
   });
 });

@@ -83,6 +83,9 @@ export interface SlackWebClientExtended {
   };
 }
 
+/** プランタイプ */
+export type PlanType = 'free' | 'pro';
+
 /** エラー種別 */
 export type ErrorKind =
   | 'PARSE_ERROR'
@@ -95,6 +98,7 @@ export type ErrorKind =
   | 'RATE_LIMITED'
   | 'FATAL_API_ERROR'
   | 'INVALID_TEAM_DOMAIN'
+  | 'PLAN_LIMIT'
   | 'UNKNOWN';
 
 /** アプリケーションエラー */

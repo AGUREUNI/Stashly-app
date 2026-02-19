@@ -5,6 +5,7 @@ import { collectMessages, resolveChannelNames } from '../../services/message-col
 import { buildMarkdown, buildAppendMarkdown } from '../../services/markdown-builder';
 import { upsertCanvas } from '../../services/canvas-manager';
 import { lockManager } from '../../services/lock-manager';
+import { getWorkspacePlan, checkPlanLimits, PLAN_LIMITS } from '../../services/plan-manager';
 import { AppError } from '../../types';
 import { getUserLocale, t } from '../../i18n';
 import type { SupportedLocale, MessageKey } from '../../i18n';
@@ -84,6 +85,10 @@ export async function handleCanvasCollect({ command, ack, client }: {
     const parsed = parseCommand(command.text ?? '', locale);
     emoji = parsed.emoji;
 
+    // 3. プラン取得 → プラン制限チェック
+    const plan = await getWorkspacePlan(teamId);
+    checkPlanLimits(parsed, plan);
+
     // チャンネル名からIDを解決
     let resolvedChannelIds: string[] = [];
     if (parsed.channelNames.length > 0) {
@@ -97,11 +102,11 @@ export async function handleCanvasCollect({ command, ack, client }: {
       }
     }
 
-    // 3. 対象チャンネルを決定
+    // 4. 対象チャンネルを決定
     const targetChannels = new Set<string>([channelId, ...parsed.channels, ...resolvedChannelIds]);
     const channelIds = Array.from(targetChannels);
 
-    // 4. ロック取得（「収集中」送信の前に取得して矛盾メッセージを防止）
+    // 5. ロック取得（「収集中」送信の前に取得して矛盾メッセージを防止）
     if (!lockManager.acquire(`${teamId}:${emoji}`)) {
       await sendEphemeral(
         t(locale, 'lock.conflictFallback', { emoji }),
@@ -111,13 +116,16 @@ export async function handleCanvasCollect({ command, ack, client }: {
     }
 
     try {
-      // 5. 収集中メッセージ送信
+      // 6. 収集中メッセージ送信
       await sendEphemeral(
         t(locale, 'collecting.fallback', { channelCount: channelIds.length, emoji }),
         buildCollectingBlocks(locale, emoji, channelIds.length),
       );
-      // 6. メッセージ収集
-      const result = await collectMessages(client, emoji, channelIds, parsed.periodDays);
+      // 7. メッセージ収集
+      const result = await collectMessages(client, emoji, channelIds, {
+        periodDays: parsed.periodDays,
+        maxMessages: PLAN_LIMITS[plan].maxMessages,
+      });
 
       // 該当なし
       if (result.messages.length === 0) {
@@ -133,7 +141,7 @@ export async function handleCanvasCollect({ command, ack, client }: {
         .filter(([, reached]) => reached)
         .map(([chId]) => chId);
 
-      // 7. Canvas検索 → 作成 or 追記
+      // 8. Canvas検索 → 作成 or 追記
       const newMarkdown = buildMarkdown(locale, emoji, result.messages, channelIds.length);
       const appendMarkdown = buildAppendMarkdown(locale, emoji, result.messages, channelIds.length);
 
@@ -145,9 +153,10 @@ export async function handleCanvasCollect({ command, ack, client }: {
         appendMarkdown,
         teamId,
         teamDomain,
+        PLAN_LIMITS[plan].canAppend,
       );
 
-      // 8. 完了通知
+      // 9. 完了通知
       await sendEphemeral(
         t(locale, 'completion.fallback', { count: result.messages.length, canvasUrl }),
         buildCompletionBlocks(locale, emoji, result.messages.length, canvasUrl, {
@@ -156,7 +165,7 @@ export async function handleCanvasCollect({ command, ack, client }: {
         }),
       );
     } finally {
-      // 9. ロック解除（finally句で確実に）
+      // 10. ロック解除（finally句で確実に）
       if (emoji) {
         lockManager.release(`${teamId}:${emoji}`);
       }

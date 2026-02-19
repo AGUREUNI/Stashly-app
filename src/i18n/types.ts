@@ -28,6 +28,10 @@ export interface Messages {
   'error.channelNotFound': string;
   // コマンド構文例
   'command.periodExample': string;
+  // プランエラー
+  'error.planMultiChannel': string;
+  'error.planPeriodTooLong': string;
+  'error.planCanvasAppend': string;
   // APIエラー
   'error.missingScope': string;
   'error.authInvalid': string;
