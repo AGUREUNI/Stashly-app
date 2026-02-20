@@ -63,6 +63,9 @@ export interface SlackWebClientExtended {
         document_content: { type: 'markdown'; markdown: string };
       }>;
     }): Promise<{ ok?: boolean }>;
+    delete(params: {
+      canvas_id: string;
+    }): Promise<{ ok?: boolean }>;
   };
   files: {
     list(params: {

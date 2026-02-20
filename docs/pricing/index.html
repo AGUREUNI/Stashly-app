@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pricing — Stashly</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .lang-ja { display: none; }
+    body.ja .lang-en { display: none; }
+    body.ja .lang-ja { display: block; }
+    .btn-lang-active { background-color: #f59e0b; color: white; }
+  </style>
+</head>
+<body class="bg-white text-gray-900 en">
+
+  <!-- Nav -->
+  <nav class="border-b border-gray-100 px-6 py-4">
+    <div class="max-w-5xl mx-auto flex items-center justify-between">
+      <a href="/Stashly-app/" class="flex items-center gap-2 text-xl font-bold text-amber-500">
+        🐿️ Stashly
+      </a>
+      <div class="flex items-center gap-6">
+        <a href="/Stashly-app/pricing" class="text-sm font-semibold text-amber-500">Pricing</a>
+        <a href="/Stashly-app/support" class="text-sm text-gray-600 hover:text-amber-500">Support</a>
+        <a href="/Stashly-app/privacy" class="text-sm text-gray-600 hover:text-amber-500">Privacy</a>
+        <div class="flex rounded overflow-hidden border border-gray-200 text-xs font-medium">
+          <button onclick="setLang('en')" id="btn-en" class="px-3 py-1 btn-lang-active">EN</button>
+          <button onclick="setLang('ja')" id="btn-ja" class="px-3 py-1 bg-white text-gray-600 hover:bg-gray-50">JA</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Header -->
+  <section class="py-16 px-6 text-center bg-amber-50">
+    <div class="lang-en">
+      <h1 class="text-4xl font-extrabold mb-3">Simple, transparent pricing</h1>
+      <p class="text-gray-600 text-lg">Start for free. Upgrade when you need more.</p>
+    </div>
+    <div class="lang-ja">
+      <h1 class="text-4xl font-extrabold mb-3">シンプルな料金プラン</h1>
+      <p class="text-gray-600 text-lg">まずは無料で始めて、必要なときにアップグレード。</p>
+    </div>
+  </section>
+
+  <!-- Pricing cards -->
+  <section class="py-16 px-6">
+    <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-8">
+
+      <!-- Free -->
+      <div class="border border-gray-200 rounded-2xl p-8">
+        <div class="lang-en">
+          <h2 class="text-2xl font-bold mb-1">Free</h2>
+          <p class="text-4xl font-extrabold mb-1">$0</p>
+          <p class="text-gray-500 text-sm mb-6">Forever free</p>
+          <ul class="space-y-3 mb-8 text-sm">
+            <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">✓</span> Up to <strong>50 messages</strong> per collection</li>
+            <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">✓</span> Last <strong>30 days</strong> only</li>
+            <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">✓</span> <strong>Single channel</strong> collection</li>
+            <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">✓</span> Canvas <strong>overwrite</strong> (fresh each time)</li>
+            <li class="flex items-start gap-2"><span class="text-gray-300 mt-0.5">✕</span> <span class="text-gray-400">Multi-channel collection</span></li>
+            <li class="flex items-start gap-2"><span class="text-gray-300 mt-0.5">✕</span> <span class="text-gray-400">Append to existing Canvas</span></li>
+            <li class="flex items-start gap-2"><span class="text-gray-300 mt-0.5">✕</span> <span class="text-gray-400">Unlimited time period</span></li>
+          </ul>
+          <a href="https://YOUR_RAILWAY_DOMAIN/slack/install"
+             class="block text-center border-2 border-amber-500 text-amber-600 hover:bg-amber-50 font-semibold px-6 py-3 rounded-lg transition">
+            Get started free
+          </a>
+        </div>
+        <div class="lang-ja">
+          <h2 class="text-2xl font-bold mb-1">フリー</h2>
+          <p class="text-4xl font-extrabold mb-1">無料</p>
+          <p class="text-gray-500 text-sm mb-6">ずっと無料</p>
+          <ul class="space-y-3 mb-8 text-sm">
+            <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">✓</span> 1回あたり最大 <strong>50件</strong> 収集</li>
+            <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">✓</span> <strong>過去30日以内</strong> のみ</li>
+            <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">✓</span> <strong>1チャンネル</strong> のみ</li>
+            <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">✓</span> Canvas <strong>上書き</strong>（毎回新鮮な内容）</li>
+            <li class="flex items-start gap-2"><span class="text-gray-300 mt-0.5">✕</span> <span class="text-gray-400">複数チャンネル横断収集</span></li>
+            <li class="flex items-start gap-2"><span class="text-gray-300 mt-0.5">✕</span> <span class="text-gray-400">既存Canvasへの追記</span></li>
+            <li class="flex items-start gap-2"><span class="text-gray-300 mt-0.5">✕</span> <span class="text-gray-400">全期間収集</span></li>
+          </ul>
+          <a href="https://YOUR_RAILWAY_DOMAIN/slack/install"
+             class="block text-center border-2 border-amber-500 text-amber-600 hover:bg-amber-50 font-semibold px-6 py-3 rounded-lg transition">
+            無料で始める
+          </a>
+        </div>
+      </div>
+
+      <!-- Pro -->
+      <div class="border-2 border-amber-500 rounded-2xl p-8 relative">
+        <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-500 text-white text-xs font-bold px-4 py-1 rounded-full">
+          <span class="lang-en">RECOMMENDED</span>
+          <span class="lang-ja">おすすめ</span>
+        </div>
+        <div class="lang-en">
+          <h2 class="text-2xl font-bold mb-1">Pro</h2>
+          <p class="text-4xl font-extrabold mb-1">Contact us</p>
+          <p class="text-gray-500 text-sm mb-6">For teams that need more</p>
+          <ul class="space-y-3 mb-8 text-sm">
+            <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">✓</span> Up to <strong>500 messages</strong> per collection</li>
+            <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">✓</span> <strong>Any time period</strong> (no limit)</li>
+            <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">✓</span> <strong>Multi-channel</strong> collection (up to 10)</li>
+            <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">✓</span> <strong>Append</strong> to existing Canvas</li>
+            <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">✓</span> All Free features included</li>
+            <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">✓</span> Priority support</li>
+          </ul>
+          <a href="mailto:support@stashly.app?subject=Pro%20Plan%20Inquiry"
+             class="block text-center bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6 py-3 rounded-lg transition">
+            Contact us for Pro
+          </a>
+        </div>
+        <div class="lang-ja">
+          <h2 class="text-2xl font-bold mb-1">プロ</h2>
+          <p class="text-4xl font-extrabold mb-1">お問い合わせ</p>
+          <p class="text-gray-500 text-sm mb-6">より多くを求めるチーム向け</p>
+          <ul class="space-y-3 mb-8 text-sm">
+            <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">✓</span> 1回あたり最大 <strong>500件</strong> 収集</li>
+            <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">✓</span> <strong>全期間</strong>を対象に収集（制限なし）</li>
+            <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">✓</span> <strong>複数チャンネル</strong>横断収集（最大10ch）</li>
+            <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">✓</span> 既存Canvasへの<strong>追記</strong>で蓄積</li>
+            <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">✓</span> フリープランの全機能を含む</li>
+            <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">✓</span> 優先サポート</li>
+          </ul>
+          <a href="mailto:support@stashly.app?subject=Pro%E3%83%97%E3%83%A9%E3%83%B3%E3%81%AE%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B"
+             class="block text-center bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6 py-3 rounded-lg transition">
+            Proプランについて問い合わせる
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="py-12 px-6 bg-gray-50">
+    <div class="max-w-3xl mx-auto">
+      <div class="lang-en">
+        <h2 class="text-xl font-bold mb-6 text-center">Frequently asked questions</h2>
+        <div class="space-y-4">
+          <details class="bg-white rounded-lg border border-gray-200 px-5 py-4">
+            <summary class="font-medium cursor-pointer">How do I upgrade to Pro?</summary>
+            <p class="mt-3 text-sm text-gray-600">Please <a href="mailto:support@stashly.app" class="text-amber-500 underline">contact us</a> and we'll set up your workspace manually. Automated billing is coming soon.</p>
+          </details>
+          <details class="bg-white rounded-lg border border-gray-200 px-5 py-4">
+            <summary class="font-medium cursor-pointer">Can I try the app before upgrading?</summary>
+            <p class="mt-3 text-sm text-gray-600">Yes! The Free plan is fully functional — no credit card required. You can start collecting right away.</p>
+          </details>
+          <details class="bg-white rounded-lg border border-gray-200 px-5 py-4">
+            <summary class="font-medium cursor-pointer">What happens to my Canvas if I downgrade?</summary>
+            <p class="mt-3 text-sm text-gray-600">Your existing Canvases remain in Slack. You just won't be able to append to them with the app anymore — the Free plan will overwrite instead.</p>
+          </details>
+        </div>
+      </div>
+      <div class="lang-ja">
+        <h2 class="text-xl font-bold mb-6 text-center">よくある質問</h2>
+        <div class="space-y-4">
+          <details class="bg-white rounded-lg border border-gray-200 px-5 py-4">
+            <summary class="font-medium cursor-pointer">Proプランへのアップグレード方法は？</summary>
+            <p class="mt-3 text-sm text-gray-600"><a href="mailto:support@stashly.app" class="text-amber-500 underline">お問い合わせ</a>いただければ、手動でワークスペースのプランを切り替えます。自動課金は近日対応予定です。</p>
+          </details>
+          <details class="bg-white rounded-lg border border-gray-200 px-5 py-4">
+            <summary class="font-medium cursor-pointer">アップグレード前に試せますか？</summary>
+            <p class="mt-3 text-sm text-gray-600">もちろんです！フリープランはクレジットカード不要でフル機能をお試しいただけます。</p>
+          </details>
+          <details class="bg-white rounded-lg border border-gray-200 px-5 py-4">
+            <summary class="font-medium cursor-pointer">ダウングレードするとCanvasはどうなりますか？</summary>
+            <p class="mt-3 text-sm text-gray-600">既存のCanvasはSlack上にそのまま残ります。ただし追記はできなくなり、フリープランでは上書き動作になります。</p>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-gray-100 py-8 px-6 text-center text-sm text-gray-500">
+    <div class="flex justify-center gap-6 mb-3">
+      <a href="/Stashly-app/pricing" class="hover:text-amber-500">Pricing</a>
+      <a href="/Stashly-app/support" class="hover:text-amber-500">Support</a>
+      <a href="/Stashly-app/privacy" class="hover:text-amber-500">Privacy Policy</a>
+      <a href="https://github.com/AGUREUNI/Stashly-app" class="hover:text-amber-500">GitHub</a>
+    </div>
+    <p>© 2025 Stashly</p>
+  </footer>
+
+  <script>
+    function setLang(lang) {
+      document.body.className = lang;
+      document.getElementById('btn-en').className = 'px-3 py-1 ' + (lang === 'en' ? 'btn-lang-active' : 'bg-white text-gray-600 hover:bg-gray-50');
+      document.getElementById('btn-ja').className = 'px-3 py-1 ' + (lang === 'ja' ? 'btn-lang-active' : 'bg-white text-gray-600 hover:bg-gray-50');
+    }
+  </script>
+</body>
+</html>

@@ -30,9 +30,8 @@ const es: Messages = {
   // Ejemplo de sintaxis
   'command.periodExample': 'últimos 7 días',
   // Errores de plan
-  'error.planMultiChannel': '❌ La recopilación de múltiples canales es una función del plan Pro\nActualice a Pro para usar esta función',
-  'error.planPeriodTooLong': '❌ Recopilar más allá de los últimos 30 días es una función del plan Pro\nActualice a Pro para recopilar desde cualquier período',
-  'error.planCanvasAppend': '❌ Agregar a un stash (Canvas) existente no está disponible en el plan Free\nActualice a Pro para seguir acumulando su colección',
+  'error.planMultiChannel': '❌ La recopilación de múltiples canales es una función del plan Pro\nActualice a Pro para usar esta función\n👉 <{{upgradeUrl}}|Ver plan Pro>',
+  'error.planPeriodTooLong': '❌ Recopilar más allá de los últimos 30 días es una función del plan Pro\nActualice a Pro para recopilar desde cualquier período\n👉 <{{upgradeUrl}}|Ver plan Pro>',
   // Errores de API
   'error.missingScope': '❌ La aplicación no tiene los permisos necesarios\nPor favor pida a un administrador que reinstale',
   'error.authInvalid': '❌ La autenticación de la aplicación no es válida\nPor favor pida a un administrador que reinstale',

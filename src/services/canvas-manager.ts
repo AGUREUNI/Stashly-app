@@ -108,6 +108,20 @@ export async function createCanvas(
 }
 
 /**
+ * 既存のCanvasを削除する
+ */
+export async function deleteCanvas(
+  client: WebClient,
+  canvasId: string,
+): Promise<void> {
+  await callWithRetry(() =>
+    (client as unknown as SlackWebClientExtended).canvases.delete({
+      canvas_id: canvasId,
+    }),
+  );
+}
+
+/**
  * 既存のCanvasに追記する（insert_at_end オペレーション使用）
  */
 export async function appendToCanvas(
@@ -132,10 +146,10 @@ export async function appendToCanvas(
 }
 
 /**
- * Canvas検索 → 追記 or 新規作成 の統合処理
+ * Canvas検索 → 追記 or 上書き or 新規作成 の統合処理
  *
- * @param canAppend - true: 既存 Canvas があれば追記する（Pro プランのデフォルト）
- *                   false: 既存 Canvas があればエラー（Free プラン）
+ * @param canAppend - true: 既存 Canvas があれば追記する（Pro プラン）
+ *                   false: 既存 Canvas があれば削除して新規作成（Free プラン・上書き）
  */
 export async function upsertCanvas(
   client: WebClient,
@@ -151,15 +165,17 @@ export async function upsertCanvas(
   const existing = await findCanvas(client, channelId, emoji);
 
   if (existing) {
-    if (!canAppend) {
-      // Free プラン: 既存 Canvas への追記不可 → エラーでアップグレード誘導
-      throw new AppError('PLAN_LIMIT', 'Appending to existing Canvas is not available in Free plan', undefined, 'error.planCanvasAppend');
+    if (canAppend) {
+      // Pro プラン: 既存 Canvas に追記
+      await appendToCanvas(client, existing.id, appendContentMarkdown);
+      const canvasUrl = `https://${teamDomain}.slack.com/docs/${teamId}/${existing.id}`;
+      return { canvasUrl, isNew: false };
+    } else {
+      // Free プラン: 既存 Canvas を削除して新規作成（上書き）
+      await deleteCanvas(client, existing.id);
+      const { canvasUrl } = await createCanvas(client, channelId, emoji, newContentMarkdown, teamId, teamDomain);
+      return { canvasUrl, isNew: true };
     }
-    // 既存Canvasに追記
-    await appendToCanvas(client, existing.id, appendContentMarkdown);
-
-    const canvasUrl = `https://${teamDomain}.slack.com/docs/${teamId}/${existing.id}`;
-    return { canvasUrl, isNew: false };
   } else {
     // 新規作成（プランに関わらず）
     const { canvasUrl } = await createCanvas(client, channelId, emoji, newContentMarkdown, teamId, teamDomain);

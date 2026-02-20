@@ -158,38 +158,23 @@ describe('upsertCanvas', () => {
     expect(result.canvasUrl).toContain('F_NEW');
   });
 
-  it('should throw AppError when canAppend is false and existing canvas found', async () => {
+  it('should delete existing canvas and create new when canAppend is false (overwrite)', async () => {
     const client = createMockClient();
     client.files.list.mockResolvedValue({
       files: [{ id: 'F_EXISTING', title: ':thumbsup: Collection Log', updated: 100 }],
       response_metadata: {},
     });
+    client.canvases.create.mockResolvedValue({ canvas_id: 'F_NEW' });
 
-    await expect(
-      upsertCanvas(client, 'C123', 'thumbsup', '# New', '---\n# Append', 'T123', 'myteam', false),
-    ).rejects.toThrow(AppError);
+    const result = await upsertCanvas(
+      client, 'C123', 'thumbsup', '# New', '---\n# Append', 'T123', 'myteam', false,
+    );
 
-    // Canvas の作成・編集は行われない
-    expect(client.canvases.create).not.toHaveBeenCalled();
+    // 既存 Canvas を削除して新規作成（上書き）
+    expect(client.canvases.delete).toHaveBeenCalledWith({ canvas_id: 'F_EXISTING' });
+    expect(client.canvases.create).toHaveBeenCalled();
     expect(client.canvases.edit).not.toHaveBeenCalled();
-  });
-
-  it('should include planCanvasAppend messageKey in thrown error', async () => {
-    const client = createMockClient();
-    client.files.list.mockResolvedValue({
-      files: [{ id: 'F_EXISTING', title: ':thumbsup: Collection Log', updated: 100 }],
-      response_metadata: {},
-    });
-
-    let thrownError: AppError | undefined;
-    try {
-      await upsertCanvas(client, 'C123', 'thumbsup', '# New', '---\n# Append', 'T123', 'myteam', false);
-    } catch (e) {
-      thrownError = e as AppError;
-    }
-
-    expect(thrownError).toBeInstanceOf(AppError);
-    expect(thrownError?.messageKey).toBe('error.planCanvasAppend');
-    expect(thrownError?.kind).toBe('PLAN_LIMIT');
+    expect(result.isNew).toBe(true);
+    expect(result.canvasUrl).toContain('F_NEW');
   });
 });

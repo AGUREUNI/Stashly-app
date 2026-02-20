@@ -30,9 +30,8 @@ const ja: Messages = {
   // コマンド構文例
   'command.periodExample': '過去7日',
   // プランエラー
-  'error.planMultiChannel': '❌ 複数チャンネルの横断収集はProプランの機能です\nProプランにアップグレードするとご利用いただけます',
-  'error.planPeriodTooLong': '❌ 過去30日以上の収集はProプランの機能です\nProプランにアップグレードすると全期間を対象にできます',
-  'error.planCanvasAppend': '❌ Freeプランではすでにあるスタッシュ（Canvas）への追記はできません\nProプランにアップグレードすると追記して蓄積できるようになります',
+  'error.planMultiChannel': '❌ 複数チャンネルの横断収集はProプランの機能です\nProプランにアップグレードするとご利用いただけます\n👉 <{{upgradeUrl}}|Proプランを確認する>',
+  'error.planPeriodTooLong': '❌ 過去30日以上の収集はProプランの機能です\nProプランにアップグレードすると全期間を対象にできます\n👉 <{{upgradeUrl}}|Proプランを確認する>',
   // APIエラー
   'error.missingScope': '❌ アプリの権限が不足しています\n管理者に再インストールを依頼してください',
   'error.authInvalid': '❌ アプリの認証が無効です\n管理者に再インストールを依頼してください',

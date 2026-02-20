@@ -3,6 +3,12 @@ import { AppError, ParsedCommand, PlanType } from '../types';
 
 export type { PlanType };
 
+/**
+ * アップグレードページURL（GitHub Pages の価格ページ）
+ * TODO: 独自ドメイン取得後は更新すること
+ */
+export const UPGRADE_URL = 'https://agureuni.github.io/Stashly-app/pricing';
+
 /** プランごとの制限設定 */
 export const PLAN_LIMITS = {
   free: { maxMessages: 50,  maxPeriodDays: 30   as number | null, canMultiChannel: false, canAppend: false },

@@ -5,7 +5,7 @@ import { collectMessages, resolveChannelNames } from '../../services/message-col
 import { buildMarkdown, buildAppendMarkdown } from '../../services/markdown-builder';
 import { upsertCanvas } from '../../services/canvas-manager';
 import { lockManager } from '../../services/lock-manager';
-import { getWorkspacePlan, checkPlanLimits, PLAN_LIMITS } from '../../services/plan-manager';
+import { getWorkspacePlan, checkPlanLimits, PLAN_LIMITS, UPGRADE_URL } from '../../services/plan-manager';
 import { AppError } from '../../types';
 import { getUserLocale, t } from '../../i18n';
 import type { SupportedLocale, MessageKey } from '../../i18n';
@@ -177,7 +177,7 @@ export async function handleCanvasCollect({ command, ack, client }: {
         // messageKeyがあれば翻訳、なければそのまま（command-parserは翻訳済み）
         let msg = error.message;
         if (error.messageKey) {
-          const params: Record<string, string> = {};
+          const params: Record<string, string> = { upgradeUrl: UPGRADE_URL };
           if (error.detail) params.code = error.detail;
           msg = t(locale, error.messageKey as MessageKey, params);
         }

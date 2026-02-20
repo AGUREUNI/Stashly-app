@@ -26,6 +26,7 @@ export function createMockClient(overrides: Record<string, any> = {}): any {
     canvases: {
       create: vi.fn().mockResolvedValue({ canvas_id: 'F_CANVAS_123' }),
       edit: vi.fn().mockResolvedValue({ ok: true }),
+      delete: vi.fn().mockResolvedValue({ ok: true }),
     },
     ...overrides,
   };

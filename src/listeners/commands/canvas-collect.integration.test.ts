@@ -447,7 +447,7 @@ describe('handleCanvasCollect 統合テスト', () => {
     expect(client.conversations.history).not.toHaveBeenCalled();
   });
 
-  it('#19 Free プラン: 既存Canvas あり → planCanvasAppend エラー', async () => {
+  it('#19 Free プラン: 既存Canvas あり → 削除して新規作成（上書き）', async () => {
     vi.stubEnv('PLAN_OVERRIDE', 'free');
     const command = createMockCommand({ text: ':thumbsup: last 7 days' });
     setupHistoryWithReactions(client, 'thumbsup', 3);
@@ -461,13 +461,14 @@ describe('handleCanvasCollect 統合テスト', () => {
     await handleCanvasCollect({ command, ack, client });
 
     expect(ack).toHaveBeenCalledOnce();
-    // 収集中 + エラー = 2回
+    // 収集中 + 完了 = 2回（エラーにならない）
     expect(client.chat.postEphemeral).toHaveBeenCalledTimes(2);
-    const errorCall = client.chat.postEphemeral.mock.calls[1][0];
-    expect(errorCall.text).toContain('Pro');
+    const completionCall = client.chat.postEphemeral.mock.calls[1][0];
+    expect(completionCall.text).toContain('3');
 
-    // Canvas作成・追記は行われない
-    expect(client.canvases.create).not.toHaveBeenCalled();
+    // 既存 Canvas を削除して新規作成
+    expect(client.canvases.delete).toHaveBeenCalledWith({ canvas_id: 'F_EXISTING' });
+    expect(client.canvases.create).toHaveBeenCalledOnce();
     expect(client.canvases.edit).not.toHaveBeenCalled();
   });
 

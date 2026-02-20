@@ -30,9 +30,8 @@ const zh: Messages = {
   // 命令语法示例
   'command.periodExample': '过去7天',
   // 套餐错误
-  'error.planMultiChannel': '❌ 跨多频道收集是Pro套餐的功能\n请升级到Pro套餐以使用此功能',
-  'error.planPeriodTooLong': '❌ 收集30天以前的消息是Pro套餐的功能\n请升级到Pro套餐以收集任意时间段的内容',
-  'error.planCanvasAppend': '❌ Free套餐不支持向已有的收藏夹（Canvas）追加内容\n请升级到Pro套餐以持续积累您的收藏',
+  'error.planMultiChannel': '❌ 跨多频道收集是Pro套餐的功能\n请升级到Pro套餐以使用此功能\n👉 <{{upgradeUrl}}|查看Pro套餐>',
+  'error.planPeriodTooLong': '❌ 收集30天以前的消息是Pro套餐的功能\n请升级到Pro套餐以收集任意时间段的内容\n👉 <{{upgradeUrl}}|查看Pro套餐>',
   // API错误
   'error.missingScope': '❌ 应用缺少必要的权限\n请让管理员重新安装',
   'error.authInvalid': '❌ 应用认证无效\n请让管理员重新安装',

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Support — Stashly</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .lang-ja { display: none; }
+    body.ja .lang-en { display: none; }
+    body.ja .lang-ja { display: block; }
+    .btn-lang-active { background-color: #f59e0b; color: white; }
+  </style>
+</head>
+<body class="bg-white text-gray-900 en">
+
+  <!-- Nav -->
+  <nav class="border-b border-gray-100 px-6 py-4">
+    <div class="max-w-5xl mx-auto flex items-center justify-between">
+      <a href="/Stashly-app/" class="flex items-center gap-2 text-xl font-bold text-amber-500">
+        🐿️ Stashly
+      </a>
+      <div class="flex items-center gap-6">
+        <a href="/Stashly-app/pricing" class="text-sm text-gray-600 hover:text-amber-500">Pricing</a>
+        <a href="/Stashly-app/support" class="text-sm font-semibold text-amber-500">Support</a>
+        <a href="/Stashly-app/privacy" class="text-sm text-gray-600 hover:text-amber-500">Privacy</a>
+        <div class="flex rounded overflow-hidden border border-gray-200 text-xs font-medium">
+          <button onclick="setLang('en')" id="btn-en" class="px-3 py-1 btn-lang-active">EN</button>
+          <button onclick="setLang('ja')" id="btn-ja" class="px-3 py-1 bg-white text-gray-600 hover:bg-gray-50">JA</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Header -->
+  <section class="py-14 px-6 text-center bg-amber-50">
+    <div class="lang-en">
+      <h1 class="text-4xl font-extrabold mb-2">Support & FAQ</h1>
+      <p class="text-gray-600">How can we help you?</p>
+    </div>
+    <div class="lang-ja">
+      <h1 class="text-4xl font-extrabold mb-2">サポート & FAQ</h1>
+      <p class="text-gray-600">何かお困りですか？</p>
+    </div>
+  </section>
+
+  <main class="max-w-3xl mx-auto px-6 py-14">
+
+    <!-- Quick start -->
+    <section class="mb-12">
+      <div class="lang-en">
+        <h2 class="text-2xl font-bold mb-6">Quick Start</h2>
+        <ol class="space-y-4 text-gray-700">
+          <li class="flex gap-4">
+            <span class="flex-shrink-0 w-7 h-7 bg-amber-500 text-white rounded-full flex items-center justify-center text-sm font-bold">1</span>
+            <div>
+              <p class="font-medium">Install Stashly to your Slack workspace</p>
+              <p class="text-sm text-gray-500 mt-1">Click "Add to Slack" on the <a href="/Stashly-app/" class="text-amber-500 underline">home page</a> and authorize the app.</p>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <span class="flex-shrink-0 w-7 h-7 bg-amber-500 text-white rounded-full flex items-center justify-center text-sm font-bold">2</span>
+            <div>
+              <p class="font-medium">React to messages with an emoji</p>
+              <p class="text-sm text-gray-500 mt-1">Add the same emoji (e.g., ⭐) to every message you want to collect.</p>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <span class="flex-shrink-0 w-7 h-7 bg-amber-500 text-white rounded-full flex items-center justify-center text-sm font-bold">3</span>
+            <div>
+              <p class="font-medium">Run the command</p>
+              <p class="text-sm text-gray-500 mt-1">In any channel, type:</p>
+              <code class="mt-2 block bg-gray-100 rounded px-4 py-2 text-sm">/canvas-collect :star: last 7 days</code>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <span class="flex-shrink-0 w-7 h-7 bg-amber-500 text-white rounded-full flex items-center justify-center text-sm font-bold">4</span>
+            <div>
+              <p class="font-medium">Canvas is created!</p>
+              <p class="text-sm text-gray-500 mt-1">Stashly replies with a link to a new Slack Canvas containing all matching messages.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+      <div class="lang-ja">
+        <h2 class="text-2xl font-bold mb-6">クイックスタート</h2>
+        <ol class="space-y-4 text-gray-700">
+          <li class="flex gap-4">
+            <span class="flex-shrink-0 w-7 h-7 bg-amber-500 text-white rounded-full flex items-center justify-center text-sm font-bold">1</span>
+            <div>
+              <p class="font-medium">Slackワークスペースにインストール</p>
+              <p class="text-sm text-gray-500 mt-1"><a href="/Stashly-app/" class="text-amber-500 underline">トップページ</a>の「Slackに追加する」からインストールして認証してください。</p>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <span class="flex-shrink-0 w-7 h-7 bg-amber-500 text-white rounded-full flex items-center justify-center text-sm font-bold">2</span>
+            <div>
+              <p class="font-medium">メッセージに絵文字でリアクション</p>
+              <p class="text-sm text-gray-500 mt-1">収集したいメッセージに同じ絵文字（例：⭐）をリアクションしておきます。</p>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <span class="flex-shrink-0 w-7 h-7 bg-amber-500 text-white rounded-full flex items-center justify-center text-sm font-bold">3</span>
+            <div>
+              <p class="font-medium">コマンドを実行</p>
+              <p class="text-sm text-gray-500 mt-1">チャンネルで以下を入力：</p>
+              <code class="mt-2 block bg-gray-100 rounded px-4 py-2 text-sm">/canvas-collect :star: 過去7日</code>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <span class="flex-shrink-0 w-7 h-7 bg-amber-500 text-white rounded-full flex items-center justify-center text-sm font-bold">4</span>
+            <div>
+              <p class="font-medium">Canvasが作成されます！</p>
+              <p class="text-sm text-gray-500 mt-1">StashlyがCanvasへのリンク付き完了メッセージを返します。</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Command reference -->
+    <section class="mb-12">
+      <div class="lang-en">
+        <h2 class="text-2xl font-bold mb-4">Command Reference</h2>
+        <div class="bg-gray-50 rounded-xl p-6 text-sm space-y-3">
+          <p class="font-mono text-gray-800">/canvas-collect :emoji:</p>
+          <p class="font-mono text-gray-800">/canvas-collect :emoji: last 30 days</p>
+          <p class="font-mono text-gray-800">/canvas-collect :emoji: #channel1 #channel2</p>
+          <p class="font-mono text-gray-800">/canvas-collect :emoji: last 7 days #channel1</p>
+        </div>
+        <table class="w-full mt-4 text-sm text-gray-700 border-collapse">
+          <thead><tr class="border-b border-gray-200 text-left">
+            <th class="py-2 pr-4 font-semibold">Option</th>
+            <th class="py-2 font-semibold">Description</th>
+          </tr></thead>
+          <tbody>
+            <tr class="border-b border-gray-100"><td class="py-2 pr-4 font-mono text-xs">:emoji:</td><td class="py-2">Required. The emoji to search for reactions.</td></tr>
+            <tr class="border-b border-gray-100"><td class="py-2 pr-4 font-mono text-xs">last N days/weeks/months</td><td class="py-2">Limit collection to a time period. (Free plan: max 30 days)</td></tr>
+            <tr class="border-b border-gray-100"><td class="py-2 pr-4 font-mono text-xs">#channel</td><td class="py-2">Additional channels to search. (Pro plan only)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="lang-ja">
+        <h2 class="text-2xl font-bold mb-4">コマンドリファレンス</h2>
+        <div class="bg-gray-50 rounded-xl p-6 text-sm space-y-3">
+          <p class="font-mono text-gray-800">/canvas-collect :emoji:</p>
+          <p class="font-mono text-gray-800">/canvas-collect :emoji: 過去30日</p>
+          <p class="font-mono text-gray-800">/canvas-collect :emoji: #channel1 #channel2</p>
+          <p class="font-mono text-gray-800">/canvas-collect :emoji: 過去7日 #channel1</p>
+        </div>
+        <table class="w-full mt-4 text-sm text-gray-700 border-collapse">
+          <thead><tr class="border-b border-gray-200 text-left">
+            <th class="py-2 pr-4 font-semibold">オプション</th>
+            <th class="py-2 font-semibold">説明</th>
+          </tr></thead>
+          <tbody>
+            <tr class="border-b border-gray-100"><td class="py-2 pr-4 font-mono text-xs">:emoji:</td><td class="py-2">必須。検索するリアクション絵文字。</td></tr>
+            <tr class="border-b border-gray-100"><td class="py-2 pr-4 font-mono text-xs">過去N日/週/ヶ月</td><td class="py-2">収集期間を制限。（フリープラン: 最大30日）</td></tr>
+            <tr class="border-b border-gray-100"><td class="py-2 pr-4 font-mono text-xs">#channel</td><td class="py-2">追加の収集チャンネル。（Proプランのみ）</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="mb-12">
+      <div class="lang-en">
+        <h2 class="text-2xl font-bold mb-6">FAQ</h2>
+        <div class="space-y-4">
+          <details class="border border-gray-200 rounded-lg px-5 py-4">
+            <summary class="font-medium cursor-pointer">The bot doesn't respond to my command. What should I do?</summary>
+            <p class="mt-3 text-sm text-gray-600">Make sure Stashly is installed in your workspace. Also check that Socket Mode is <strong>disabled</strong> in your Slack App settings and that the Request URL is correctly set to your server's <code>/slack/events</code> endpoint.</p>
+          </details>
+          <details class="border border-gray-200 rounded-lg px-5 py-4">
+            <summary class="font-medium cursor-pointer">Why does the Canvas get overwritten each time? (Free plan)</summary>
+            <p class="mt-3 text-sm text-gray-600">The Free plan overwrites the existing Canvas on each run to prevent unlimited Canvas accumulation. Upgrade to Pro to append new results to the same Canvas and build a running log.</p>
+          </details>
+          <details class="border border-gray-200 rounded-lg px-5 py-4">
+            <summary class="font-medium cursor-pointer">The bot says "channel not found". How do I fix this?</summary>
+            <p class="mt-3 text-sm text-gray-600">Invite Stashly to the channel first: type <code class="text-xs bg-gray-100 px-1 rounded">/invite @Stashly</code> in the channel you want to collect from.</p>
+          </details>
+          <details class="border border-gray-200 rounded-lg px-5 py-4">
+            <summary class="font-medium cursor-pointer">Can I collect from private channels?</summary>
+            <p class="mt-3 text-sm text-gray-600">Yes, as long as the Stashly bot has been invited to that private channel.</p>
+          </details>
+          <details class="border border-gray-200 rounded-lg px-5 py-4">
+            <summary class="font-medium cursor-pointer">I get a "missing scope" error after reinstalling.</summary>
+            <p class="mt-3 text-sm text-gray-600">Please uninstall the app completely from your workspace Settings → Installed apps, then reinstall from scratch. This refreshes the OAuth scopes.</p>
+          </details>
+        </div>
+      </div>
+      <div class="lang-ja">
+        <h2 class="text-2xl font-bold mb-6">よくある質問</h2>
+        <div class="space-y-4">
+          <details class="border border-gray-200 rounded-lg px-5 py-4">
+            <summary class="font-medium cursor-pointer">コマンドを打っても反応しない</summary>
+            <p class="mt-3 text-sm text-gray-600">Stashlyがワークスペースにインストールされているか確認してください。またSlack App設定でSocket Modeが<strong>オフ</strong>になっていること、Request URLが正しく<code>/slack/events</code>に設定されていることを確認してください。</p>
+          </details>
+          <details class="border border-gray-200 rounded-lg px-5 py-4">
+            <summary class="font-medium cursor-pointer">毎回Canvasが上書きされる（フリープラン）</summary>
+            <p class="mt-3 text-sm text-gray-600">フリープランでは、Canvas増殖を防ぐために毎回上書きされます。Proプランにアップグレードすると、同じCanvasに追記して蓄積できるようになります。</p>
+          </details>
+          <details class="border border-gray-200 rounded-lg px-5 py-4">
+            <summary class="font-medium cursor-pointer">「チャンネルが見つかりません」と表示される</summary>
+            <p class="mt-3 text-sm text-gray-600">先にStashlyをそのチャンネルに招待してください。チャンネルで <code class="text-xs bg-gray-100 px-1 rounded">/invite @Stashly</code> と入力するだけです。</p>
+          </details>
+          <details class="border border-gray-200 rounded-lg px-5 py-4">
+            <summary class="font-medium cursor-pointer">プライベートチャンネルでも使えますか？</summary>
+            <p class="mt-3 text-sm text-gray-600">はい、Stashly botをそのプライベートチャンネルに招待すれば利用できます。</p>
+          </details>
+          <details class="border border-gray-200 rounded-lg px-5 py-4">
+            <summary class="font-medium cursor-pointer">再インストール後に「missing scope」エラーが出る</summary>
+            <p class="mt-3 text-sm text-gray-600">ワークスペースの設定 → インストール済みアプリからアプリを完全にアンインストールし、一から再インストールしてください。これでOAuthスコープが更新されます。</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="bg-amber-50 rounded-2xl p-8 text-center">
+      <div class="lang-en">
+        <h2 class="text-xl font-bold mb-2">Still need help?</h2>
+        <p class="text-gray-600 mb-4">Send us an email and we'll get back to you.</p>
+        <a href="mailto:support@stashly.app" class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6 py-3 rounded-lg transition">
+          support@stashly.app
+        </a>
+      </div>
+      <div class="lang-ja">
+        <h2 class="text-xl font-bold mb-2">それでも解決しない場合は？</h2>
+        <p class="text-gray-600 mb-4">メールでお問い合わせください。できるだけ早く返信します。</p>
+        <a href="mailto:support@stashly.app" class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6 py-3 rounded-lg transition">
+          support@stashly.app
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-gray-100 py-8 px-6 text-center text-sm text-gray-500">
+    <div class="flex justify-center gap-6 mb-3">
+      <a href="/Stashly-app/pricing" class="hover:text-amber-500">Pricing</a>
+      <a href="/Stashly-app/support" class="hover:text-amber-500">Support</a>
+      <a href="/Stashly-app/privacy" class="hover:text-amber-500">Privacy Policy</a>
+      <a href="https://github.com/AGUREUNI/Stashly-app" class="hover:text-amber-500">GitHub</a>
+    </div>
+    <p>© 2025 Stashly</p>
+  </footer>
+
+  <script>
+    function setLang(lang) {
+      document.body.className = lang;
+      document.getElementById('btn-en').className = 'px-3 py-1 ' + (lang === 'en' ? 'btn-lang-active' : 'bg-white text-gray-600 hover:bg-gray-50');
+      document.getElementById('btn-ja').className = 'px-3 py-1 ' + (lang === 'ja' ? 'btn-lang-active' : 'bg-white text-gray-600 hover:bg-gray-50');
+    }
+  </script>
+</body>
+</html>

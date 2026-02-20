@@ -30,9 +30,8 @@ const en: Messages = {
   // Command syntax example
   'command.periodExample': 'last 7 days',
   // Plan errors
-  'error.planMultiChannel': '❌ Multi-channel collection is a Pro plan feature\nUpgrade to Pro to use this feature',
-  'error.planPeriodTooLong': '❌ Collecting beyond the last 30 days is a Pro plan feature\nUpgrade to Pro to collect from any time period',
-  'error.planCanvasAppend': '❌ Appending to an existing stash (Canvas) is not available in the Free plan\nUpgrade to Pro to keep adding to your collection',
+  'error.planMultiChannel': '❌ Multi-channel collection is a Pro plan feature\nUpgrade to Pro to use this feature\n👉 <{{upgradeUrl}}|View Pro plan>',
+  'error.planPeriodTooLong': '❌ Collecting beyond the last 30 days is a Pro plan feature\nUpgrade to Pro to collect from any time period\n👉 <{{upgradeUrl}}|View Pro plan>',
   // API errors
   'error.missingScope': '❌ The app is missing required permissions\nPlease ask an admin to reinstall',
   'error.authInvalid': '❌ The app authentication is invalid\nPlease ask an admin to reinstall',

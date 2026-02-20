@@ -31,7 +31,6 @@ export interface Messages {
   // プランエラー
   'error.planMultiChannel': string;
   'error.planPeriodTooLong': string;
-  'error.planCanvasAppend': string;
   // APIエラー
   'error.missingScope': string;
   'error.authInvalid': string;
