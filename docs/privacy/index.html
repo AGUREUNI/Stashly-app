@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — Stashly</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .lang-ja { display: none; }
+    body.ja .lang-en { display: none; }
+    body.ja .lang-ja { display: block; }
+    .btn-lang-active { background-color: #f59e0b; color: white; }
+  </style>
+</head>
+<body class="bg-white text-gray-900 en">
+
+  <!-- Nav -->
+  <nav class="border-b border-gray-100 px-6 py-4">
+    <div class="max-w-5xl mx-auto flex items-center justify-between">
+      <a href="/Stashly-app/" class="flex items-center gap-2 text-xl font-bold text-amber-500">
+        🐿️ Stashly
+      </a>
+      <div class="flex items-center gap-6">
+        <a href="/Stashly-app/pricing" class="text-sm text-gray-600 hover:text-amber-500">Pricing</a>
+        <a href="/Stashly-app/support" class="text-sm text-gray-600 hover:text-amber-500">Support</a>
+        <a href="/Stashly-app/privacy" class="text-sm font-semibold text-amber-500">Privacy</a>
+        <div class="flex rounded overflow-hidden border border-gray-200 text-xs font-medium">
+          <button onclick="setLang('en')" id="btn-en" class="px-3 py-1 btn-lang-active">EN</button>
+          <button onclick="setLang('ja')" id="btn-ja" class="px-3 py-1 bg-white text-gray-600 hover:bg-gray-50">JA</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-3xl mx-auto px-6 py-16">
+
+    <!-- English -->
+    <div class="lang-en prose prose-gray max-w-none">
+      <h1 class="text-3xl font-extrabold mb-2">Privacy Policy</h1>
+      <p class="text-gray-500 text-sm mb-10">Last updated: February 2026</p>
+
+      <h2 class="text-xl font-bold mt-8 mb-3">1. Overview</h2>
+      <p class="text-gray-700 mb-4">
+        Stashly ("we", "our", "the app") is a Slack app that collects emoji-reacted messages and organizes them into Slack Canvas documents. This policy describes what data we collect, how we use it, and your rights.
+      </p>
+
+      <h2 class="text-xl font-bold mt-8 mb-3">2. Data We Collect</h2>
+      <ul class="list-disc list-inside text-gray-700 space-y-2 mb-4">
+        <li><strong>Workspace information</strong>: Team ID and team name, collected during OAuth installation.</li>
+        <li><strong>Bot access tokens</strong>: Encrypted using AES-256-GCM before being stored in our database.</li>
+        <li><strong>Installer user ID</strong>: The Slack user ID of the person who installed the app.</li>
+        <li><strong>Message permalinks</strong>: Public Slack URLs of collected messages, stored in Canvas documents. We do <strong>not</strong> store message text, reaction counts, or any other message content in our database.</li>
+        <li><strong>Channel names/IDs</strong>: Used temporarily during command execution to find matching messages. Not stored permanently.</li>
+      </ul>
+
+      <h2 class="text-xl font-bold mt-8 mb-3">3. Data We Do Not Collect</h2>
+      <ul class="list-disc list-inside text-gray-700 space-y-2 mb-4">
+        <li>Message content or text</li>
+        <li>Direct messages or private conversations</li>
+        <li>User profile information beyond what Slack provides for locale detection</li>
+        <li>Any data beyond what is necessary to operate the service</li>
+      </ul>
+
+      <h2 class="text-xl font-bold mt-8 mb-3">4. How We Use Your Data</h2>
+      <p class="text-gray-700 mb-4">We use collected data solely to:</p>
+      <ul class="list-disc list-inside text-gray-700 space-y-2 mb-4">
+        <li>Authenticate and connect to your Slack workspace</li>
+        <li>Execute the <code class="bg-gray-100 px-1 rounded text-xs">/canvas-collect</code> command on your behalf</li>
+        <li>Create and update Canvas documents in your Slack workspace</li>
+      </ul>
+      <p class="text-gray-700 mb-4">We do not sell, rent, or share your data with third parties for marketing purposes.</p>
+
+      <h2 class="text-xl font-bold mt-8 mb-3">5. Data Storage and Security</h2>
+      <ul class="list-disc list-inside text-gray-700 space-y-2 mb-4">
+        <li>Data is stored in a PostgreSQL database hosted on <a href="https://railway.app" class="text-amber-500 underline">Railway</a>.</li>
+        <li>All Slack tokens are encrypted at rest using AES-256-GCM.</li>
+        <li>In-memory caches (locale, locks) are not persisted and are cleared on server restart.</li>
+      </ul>
+
+      <h2 class="text-xl font-bold mt-8 mb-3">6. Data Retention</h2>
+      <p class="text-gray-700 mb-4">
+        Installation data (team ID, encrypted tokens) is retained until you uninstall the app from your workspace. Upon uninstallation, all associated data is deleted from our database.
+      </p>
+
+      <h2 class="text-xl font-bold mt-8 mb-3">7. Your Rights</h2>
+      <p class="text-gray-700 mb-4">
+        You can request deletion of your workspace data at any time by uninstalling the app from your Slack workspace, or by contacting us at <a href="mailto:support@stashly.app" class="text-amber-500 underline">support@stashly.app</a>.
+      </p>
+
+      <h2 class="text-xl font-bold mt-8 mb-3">8. Changes to This Policy</h2>
+      <p class="text-gray-700 mb-4">
+        We may update this policy from time to time. Significant changes will be communicated via our GitHub repository.
+      </p>
+
+      <h2 class="text-xl font-bold mt-8 mb-3">9. Contact</h2>
+      <p class="text-gray-700">
+        For questions or concerns, contact us at <a href="mailto:support@stashly.app" class="text-amber-500 underline">support@stashly.app</a>.
+      </p>
+    </div>
+
+    <!-- Japanese -->
+    <div class="lang-ja">
+      <h1 class="text-3xl font-extrabold mb-2">プライバシーポリシー</h1>
+      <p class="text-gray-500 text-sm mb-10">最終更新: 2026年2月</p>
+
+      <h2 class="text-xl font-bold mt-8 mb-3">1. 概要</h2>
+      <p class="text-gray-700 mb-4">
+        Stashly（以下「本アプリ」）は、絵文字リアクション付きのSlackメッセージを収集し、Slack Canvasに整理するSlackアプリです。本ポリシーでは、収集するデータ、その利用方法、およびお客様の権利について説明します。
+      </p>
+
+      <h2 class="text-xl font-bold mt-8 mb-3">2. 収集するデータ</h2>
+      <ul class="list-disc list-inside text-gray-700 space-y-2 mb-4">
+        <li><strong>ワークスペース情報</strong>: OAuthインストール時に取得するチームIDおよびチーム名。</li>
+        <li><strong>Botアクセストークン</strong>: AES-256-GCMで暗号化した上でデータベースに保存。</li>
+        <li><strong>インストールユーザーID</strong>: アプリをインストールしたSlackユーザーのID。</li>
+        <li><strong>メッセージのパーマリンク</strong>: 収集対象メッセージのSlack URL。Canvas内に記録されます。メッセージ本文・リアクション数などのコンテンツは<strong>データベースに保存しません</strong>。</li>
+        <li><strong>チャンネル名/ID</strong>: コマンド実行中に一時的に使用します。永続的には保存しません。</li>
+      </ul>
+
+      <h2 class="text-xl font-bold mt-8 mb-3">3. 収集しないデータ</h2>
+      <ul class="list-disc list-inside text-gray-700 space-y-2 mb-4">
+        <li>メッセージの本文テキスト</li>
+        <li>ダイレクトメッセージやプライベートな会話の内容</li>
+        <li>ロケール検出に必要な最小限以外のユーザープロフィール情報</li>
+        <li>サービス提供に不要な一切のデータ</li>
+      </ul>
+
+      <h2 class="text-xl font-bold mt-8 mb-3">4. データの利用目的</h2>
+      <p class="text-gray-700 mb-4">収集したデータは以下の目的にのみ使用します：</p>
+      <ul class="list-disc list-inside text-gray-700 space-y-2 mb-4">
+        <li>Slackワークスペースへの認証・接続</li>
+        <li><code class="bg-gray-100 px-1 rounded text-xs">/canvas-collect</code> コマンドの実行</li>
+        <li>SlackワークスペースへのCanvasドキュメントの作成・更新</li>
+      </ul>
+      <p class="text-gray-700 mb-4">マーケティング目的で第三者にデータを販売・貸与・共有することは一切ありません。</p>
+
+      <h2 class="text-xl font-bold mt-8 mb-3">5. データの保存とセキュリティ</h2>
+      <ul class="list-disc list-inside text-gray-700 space-y-2 mb-4">
+        <li>データは<a href="https://railway.app" class="text-amber-500 underline">Railway</a>がホストするPostgreSQLデータベースに保存されます。</li>
+        <li>すべてのSlackトークンはAES-256-GCMで暗号化して保存します。</li>
+        <li>インメモリキャッシュ（ロケール、ロック）は永続化されず、サーバー再起動時に消去されます。</li>
+      </ul>
+
+      <h2 class="text-xl font-bold mt-8 mb-3">6. データの保持期間</h2>
+      <p class="text-gray-700 mb-4">
+        インストール情報（チームID・暗号化トークン）は、アプリをアンインストールするまで保持されます。アンインストール時に関連するすべてのデータをデータベースから削除します。
+      </p>
+
+      <h2 class="text-xl font-bold mt-8 mb-3">7. お客様の権利</h2>
+      <p class="text-gray-700 mb-4">
+        Slackワークスペースからアプリをアンインストールすることで、いつでもワークスペースのデータ削除を要求できます。また、<a href="mailto:support@stashly.app" class="text-amber-500 underline">support@stashly.app</a> までご連絡いただくことも可能です。
+      </p>
+
+      <h2 class="text-xl font-bold mt-8 mb-3">8. ポリシーの変更</h2>
+      <p class="text-gray-700 mb-4">
+        本ポリシーは随時更新される場合があります。重要な変更はGitHubリポジトリを通じてお知らせします。
+      </p>
+
+      <h2 class="text-xl font-bold mt-8 mb-3">9. お問い合わせ</h2>
+      <p class="text-gray-700">
+        ご質問やご不明点は <a href="mailto:support@stashly.app" class="text-amber-500 underline">support@stashly.app</a> までご連絡ください。
+      </p>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-gray-100 py-8 px-6 text-center text-sm text-gray-500">
+    <div class="flex justify-center gap-6 mb-3">
+      <a href="/Stashly-app/pricing" class="hover:text-amber-500">Pricing</a>
+      <a href="/Stashly-app/support" class="hover:text-amber-500">Support</a>
+      <a href="/Stashly-app/privacy" class="hover:text-amber-500">Privacy Policy</a>
+      <a href="https://github.com/AGUREUNI/Stashly-app" class="hover:text-amber-500">GitHub</a>
+    </div>
+    <p>© 2025 Stashly</p>
+  </footer>
+
+  <script>
+    function setLang(lang) {
+      document.body.className = lang;
+      document.getElementById('btn-en').className = 'px-3 py-1 ' + (lang === 'en' ? 'btn-lang-active' : 'bg-white text-gray-600 hover:bg-gray-50');
+      document.getElementById('btn-ja').className = 'px-3 py-1 ' + (lang === 'ja' ? 'btn-lang-active' : 'bg-white text-gray-600 hover:bg-gray-50');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stashly — Collect what matters in Slack</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: { amber: { 450: '#f59e0b' } } } }
+    }
+  </script>
+  <style>
+    .lang-ja { display: none; }
+    body.ja .lang-en { display: none; }
+    body.ja .lang-ja { display: block; }
+    .btn-lang-active { background-color: #f59e0b; color: white; }
+  </style>
+</head>
+<body class="bg-white text-gray-900 en">
+
+  <!-- Nav -->
+  <nav class="border-b border-gray-100 px-6 py-4">
+    <div class="max-w-5xl mx-auto flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2 text-xl font-bold text-amber-500">
+        🐿️ Stashly
+      </a>
+      <div class="flex items-center gap-6">
+        <a href="/Stashly-app/pricing" class="text-sm text-gray-600 hover:text-amber-500">Pricing</a>
+        <a href="/Stashly-app/support" class="text-sm text-gray-600 hover:text-amber-500">Support</a>
+        <a href="/Stashly-app/privacy" class="text-sm text-gray-600 hover:text-amber-500">Privacy</a>
+        <div class="flex rounded overflow-hidden border border-gray-200 text-xs font-medium">
+          <button onclick="setLang('en')" id="btn-en" class="px-3 py-1 btn-lang-active">EN</button>
+          <button onclick="setLang('ja')" id="btn-ja" class="px-3 py-1 bg-white text-gray-600 hover:bg-gray-50">JA</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="py-20 px-6 text-center bg-amber-50">
+    <div class="max-w-3xl mx-auto">
+      <div class="text-7xl mb-6">🐿️</div>
+
+      <div class="lang-en">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 leading-tight">
+          Collect what matters<br/>in Slack
+        </h1>
+        <p class="text-xl text-gray-600 mb-8">
+          Stashly automatically gathers emoji-reacted messages from your Slack channels and organizes them into a Canvas — like a squirrel stashing acorns.
+        </p>
+        <a href="https://YOUR_RAILWAY_DOMAIN/slack/install"
+           class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-semibold px-8 py-4 rounded-lg text-lg transition">
+          Add to Slack
+        </a>
+      </div>
+
+      <div class="lang-ja">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 leading-tight">
+          大切なSlackメッセージを<br/>自動で収集
+        </h1>
+        <p class="text-xl text-gray-600 mb-8">
+          絵文字リアクションの付いたメッセージを自動でSlack Canvasにまとめます。リスがどんぐりを集めるように、大切な情報をスタッシュしよう。
+        </p>
+        <a href="https://YOUR_RAILWAY_DOMAIN/slack/install"
+           class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-semibold px-8 py-4 rounded-lg text-lg transition">
+          Slackに追加する
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="py-16 px-6">
+    <div class="max-w-5xl mx-auto">
+
+      <div class="lang-en">
+        <h2 class="text-2xl font-bold text-center mb-12">How it works</h2>
+      </div>
+      <div class="lang-ja">
+        <h2 class="text-2xl font-bold text-center mb-12">使い方</h2>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="text-center p-6 rounded-xl bg-gray-50">
+          <div class="text-4xl mb-4">⭐</div>
+          <div class="lang-en">
+            <h3 class="font-bold text-lg mb-2">React with an emoji</h3>
+            <p class="text-gray-600 text-sm">Add an emoji reaction to any Slack message you want to save.</p>
+          </div>
+          <div class="lang-ja">
+            <h3 class="font-bold text-lg mb-2">絵文字でリアクション</h3>
+            <p class="text-gray-600 text-sm">保存したいメッセージに絵文字リアクションを付けるだけ。</p>
+          </div>
+        </div>
+
+        <div class="text-center p-6 rounded-xl bg-gray-50">
+          <div class="text-4xl mb-4">⚡</div>
+          <div class="lang-en">
+            <h3 class="font-bold text-lg mb-2">Run the command</h3>
+            <p class="text-gray-600 text-sm">Type <code class="bg-gray-200 px-1 rounded text-xs">/canvas-collect :emoji:</code> in any channel.</p>
+          </div>
+          <div class="lang-ja">
+            <h3 class="font-bold text-lg mb-2">コマンドを実行</h3>
+            <p class="text-gray-600 text-sm">チャンネルで <code class="bg-gray-200 px-1 rounded text-xs">/canvas-collect :emoji:</code> と入力するだけ。</p>
+          </div>
+        </div>
+
+        <div class="text-center p-6 rounded-xl bg-gray-50">
+          <div class="text-4xl mb-4">📄</div>
+          <div class="lang-en">
+            <h3 class="font-bold text-lg mb-2">Canvas is ready</h3>
+            <p class="text-gray-600 text-sm">Stashly creates a Slack Canvas with all matching messages organized and linked.</p>
+          </div>
+          <div class="lang-ja">
+            <h3 class="font-bold text-lg mb-2">Canvasに自動まとめ</h3>
+            <p class="text-gray-600 text-sm">該当メッセージへのリンクが整理されたSlack Canvasが自動で作成されます。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Plans snapshot -->
+  <section class="py-16 px-6 bg-amber-50">
+    <div class="max-w-3xl mx-auto text-center">
+      <div class="lang-en">
+        <h2 class="text-2xl font-bold mb-4">Free to get started</h2>
+        <p class="text-gray-600 mb-8">
+          Start collecting for free. Upgrade to Pro for unlimited periods, multi-channel collection, and more.
+        </p>
+        <a href="/Stashly-app/pricing" class="inline-block border-2 border-amber-500 text-amber-600 hover:bg-amber-500 hover:text-white font-semibold px-6 py-3 rounded-lg transition">
+          View Pricing →
+        </a>
+      </div>
+      <div class="lang-ja">
+        <h2 class="text-2xl font-bold mb-4">無料ではじめられます</h2>
+        <p class="text-gray-600 mb-8">
+          まずは無料プランで試してみよう。Proプランにアップグレードすると、全期間収集・複数チャンネル対応などが使えるようになります。
+        </p>
+        <a href="/Stashly-app/pricing" class="inline-block border-2 border-amber-500 text-amber-600 hover:bg-amber-500 hover:text-white font-semibold px-6 py-3 rounded-lg transition">
+          料金を確認する →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-gray-100 py-8 px-6 text-center text-sm text-gray-500">
+    <div class="flex justify-center gap-6 mb-3">
+      <a href="/Stashly-app/pricing" class="hover:text-amber-500">Pricing</a>
+      <a href="/Stashly-app/support" class="hover:text-amber-500">Support</a>
+      <a href="/Stashly-app/privacy" class="hover:text-amber-500">Privacy Policy</a>
+      <a href="https://github.com/AGUREUNI/Stashly-app" class="hover:text-amber-500">GitHub</a>
+    </div>
+    <p>© 2025 Stashly</p>
+  </footer>
+
+  <script>
+    function setLang(lang) {
+      document.body.className = lang;
+      document.getElementById('btn-en').className = 'px-3 py-1 ' + (lang === 'en' ? 'btn-lang-active' : 'bg-white text-gray-600 hover:bg-gray-50');
+      document.getElementById('btn-ja').className = 'px-3 py-1 ' + (lang === 'ja' ? 'btn-lang-active' : 'bg-white text-gray-600 hover:bg-gray-50');
+    }
+  </script>
+</body>
+</html>
