@@ -91,6 +91,11 @@ if (isOAuthMode) {
   registerEvents(app);
 }
 
+// Bolt 内部エラー（authorization 失敗含む）を可視化
+app.error(async (error) => {
+  console.error('Bolt app error:', error.message, error);
+});
+
 (async () => {
   const port = Number(process.env.PORT) || 3000;
 

@@ -29,10 +29,12 @@ async function handleUninstall(
 
 export function registerAppUninstalledEvent(app: App): void {
   app.event('app_uninstalled', async ({ event, context }) => {
+    console.log('app_uninstalled: event received, teamId:', context.teamId);
     await handleUninstall(context.teamId, context.enterpriseId, 'app_uninstalled');
   });
 
   app.event('tokens_revoked', async ({ event, context }) => {
+    console.log('tokens_revoked: event received, teamId:', context.teamId);
     await handleUninstall(context.teamId, context.enterpriseId, 'tokens_revoked');
   });
 }
