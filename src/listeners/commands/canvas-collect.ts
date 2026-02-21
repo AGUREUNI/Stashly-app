@@ -7,6 +7,7 @@ import { buildMarkdown, buildAppendMarkdown } from '../../services/markdown-buil
 import { upsertCanvas } from '../../services/canvas-manager';
 import { lockManager } from '../../services/lock-manager';
 import { getWorkspacePlan, checkPlanLimits, PLAN_LIMITS, UPGRADE_URL } from '../../services/plan-manager';
+import { callWithRetry } from '../../services/slack-api';
 import { AppError } from '../../types';
 import { getUserLocale, t } from '../../i18n';
 import type { SupportedLocale, MessageKey } from '../../i18n';
@@ -82,14 +83,14 @@ export async function handleCanvasCollect({ command, ack, client }: {
   // ユーザーのlocaleを取得
   const locale: SupportedLocale = await getUserLocale(client, userId);
 
-  // エフェメラルメッセージ送信ヘルパー
+  // エフェメラルメッセージ送信ヘルパー（callWithRetry でSlackエラーをAppErrorに変換）
   const sendEphemeral = async (text: string, blocks?: KnownBlock[]) => {
-    await client.chat.postEphemeral({
+    await callWithRetry(() => client.chat.postEphemeral({
       channel: channelId,
       user: userId,
       text,
       ...(blocks ? { blocks } : {}),
-    });
+    }));
   };
 
   // per-userレートリミットチェック
@@ -196,6 +197,11 @@ export async function handleCanvasCollect({ command, ack, client }: {
     // エラーハンドリング（sendEphemeral自体の失敗も捕捉）
     try {
       if (error instanceof AppError) {
+        if (error.kind === 'NOT_IN_CHANNEL') {
+          // Bot が呼び出しチャンネルに参加していないためエフェメラル送信不可
+          console.warn(`handleCanvasCollect: bot not in channel ${channelId}, cannot send ephemeral`);
+          return;
+        }
         // messageKeyがあれば翻訳、なければそのまま（command-parserは翻訳済み）
         let msg = error.message;
         if (error.messageKey) {
