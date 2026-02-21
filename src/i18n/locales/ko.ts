@@ -27,6 +27,7 @@ const ko: Messages = {
   'error.inputTooLong': '입력이 너무 깁니다 (최대 500자)',
   'error.userRateLimited': '⏳ 실행 횟수 제한에 도달했습니다\n잠시 후 다시 시도해주세요',
   'error.channelNotFound': '❌ 채널 {{channels}}을(를) 찾을 수 없습니다',
+  'error.notInChannel': '❌ Stashly가 이 채널의 멤버가 아닙니다\n먼저 `/invite @Stashly` 로 초대해 주세요',
   // 명령어 구문 예시
   'command.periodExample': '최근 7일',
   // 플랜 오류

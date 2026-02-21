@@ -1,4 +1,4 @@
-import type { App } from '@slack/bolt';
+import type { App, RespondFn } from '@slack/bolt';
 import type { WebClient } from '@slack/web-api';
 import type { KnownBlock } from '@slack/types';
 import { parseCommand } from '../../services/command-parser';
@@ -67,10 +67,11 @@ export function _clearUserRateLimitForTest(): void {
  * /canvas-collect コマンドのハンドラ本体
  * テストから直接呼び出し可能にするため named export
  */
-export async function handleCanvasCollect({ command, ack, client }: {
+export async function handleCanvasCollect({ command, ack, client, respond }: {
   command: { text?: string; channel_id: string; user_id: string; team_id: string; team_domain: string };
   ack: () => Promise<void>;
   client: WebClient;
+  respond?: RespondFn;
 }): Promise<void> {
   // 1. 即座にSlackに応答（3秒制限）
   await ack();
@@ -198,8 +199,12 @@ export async function handleCanvasCollect({ command, ack, client }: {
     try {
       if (error instanceof AppError) {
         if (error.kind === 'NOT_IN_CHANNEL') {
-          // Bot が呼び出しチャンネルに参加していないためエフェメラル送信不可
-          console.warn(`handleCanvasCollect: bot not in channel ${channelId}, cannot send ephemeral`);
+          const msg = t(locale, 'error.notInChannel');
+          if (respond) {
+            await respond({ text: msg, blocks: buildErrorBlocks(msg) as any, response_type: 'ephemeral' });
+          } else {
+            console.warn(`handleCanvasCollect: bot not in channel ${channelId}, respond unavailable`);
+          }
           return;
         }
         // messageKeyがあれば翻訳、なければそのまま（command-parserは翻訳済み）

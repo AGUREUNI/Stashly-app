@@ -27,6 +27,7 @@ const en: Messages = {
   'error.inputTooLong': 'Input is too long (max 500 characters)',
   'error.userRateLimited': '⏳ You have reached the rate limit\nPlease wait and try again',
   'error.channelNotFound': '❌ Channel {{channels}} not found',
+  'error.notInChannel': '❌ Stashly is not a member of this channel\nPlease invite Stashly first with `/invite @Stashly`',
   // Command syntax example
   'command.periodExample': 'last 7 days',
   // Plan errors

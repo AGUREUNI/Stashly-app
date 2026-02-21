@@ -27,6 +27,7 @@ const zh: Messages = {
   'error.inputTooLong': '输入内容过长（最多500个字符）',
   'error.userRateLimited': '⏳ 您已达到执行频率限制\n请稍后重试',
   'error.channelNotFound': '❌ 未找到频道 {{channels}}',
+  'error.notInChannel': '❌ Stashly 未加入此频道\n请先使用 `/invite @Stashly` 邀请 Stashly',
   // 命令语法示例
   'command.periodExample': '过去7天',
   // 套餐错误

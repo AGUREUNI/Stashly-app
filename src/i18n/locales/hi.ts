@@ -27,6 +27,7 @@ const hi: Messages = {
   'error.inputTooLong': 'इनपुट बहुत लंबा है (अधिकतम 500 अक्षर)',
   'error.userRateLimited': '⏳ आप दर सीमा तक पहुँच गए हैं\nकृपया प्रतीक्षा करें और पुनः प्रयास करें',
   'error.channelNotFound': '❌ चैनल {{channels}} नहीं मिला',
+  'error.notInChannel': '❌ Stashly इस चैनल का सदस्य नहीं है\nकृपया पहले `/invite @Stashly` से Stashly को आमंत्रित करें',
   // कमांड सिंटैक्स उदाहरण
   'command.periodExample': 'पिछले 7 दिन',
   // प्लान त्रुटियाँ

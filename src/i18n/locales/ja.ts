@@ -27,6 +27,7 @@ const ja: Messages = {
   'error.inputTooLong': '入力が長すぎます（最大500文字）',
   'error.userRateLimited': '⏳ 連続実行の制限に達しました\nしばらく待ってから再度お試しください',
   'error.channelNotFound': '❌ チャンネル {{channels}} が見つかりません',
+  'error.notInChannel': '❌ Stashly がこのチャンネルに参加していません\n先に `/invite @Stashly` でBotを招待してください',
   // コマンド構文例
   'command.periodExample': '過去7日',
   // プランエラー

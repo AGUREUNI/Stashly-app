@@ -27,6 +27,7 @@ const es: Messages = {
   'error.inputTooLong': 'La entrada es demasiado larga (máx. 500 caracteres)',
   'error.userRateLimited': '⏳ Has alcanzado el límite de ejecuciones\nPor favor espera e intenta de nuevo',
   'error.channelNotFound': '❌ Canal {{channels}} no encontrado',
+  'error.notInChannel': '❌ Stashly no es miembro de este canal\nPrimero invita a Stashly con `/invite @Stashly`',
   // Ejemplo de sintaxis
   'command.periodExample': 'últimos 7 días',
   // Errores de plan

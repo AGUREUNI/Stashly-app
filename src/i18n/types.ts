@@ -26,6 +26,7 @@ export interface Messages {
   'error.inputTooLong': string;
   'error.userRateLimited': string;
   'error.channelNotFound': string;
+  'error.notInChannel': string;
   // コマンド構文例
   'command.periodExample': string;
   // プランエラー
