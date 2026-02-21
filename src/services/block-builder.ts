@@ -4,6 +4,22 @@ import { t } from '../i18n';
 import type { SupportedLocale } from '../i18n';
 
 /**
+ * スキップチャンネルの context block を生成するプライベートヘルパー
+ */
+function buildSkippedChannelsBlock(locale: SupportedLocale, skippedChannels: ChannelInfo[]): KnownBlock {
+  const chList = skippedChannels.map(ch => `#${ch.name}`).join(', ');
+  return {
+    type: 'context',
+    elements: [
+      {
+        type: 'mrkdwn',
+        text: t(locale, 'completion.skippedChannels', { channels: chList }),
+      },
+    ],
+  };
+}
+
+/**
  * 収集中メッセージのBlock Kit
  */
 export function buildCollectingBlocks(locale: SupportedLocale, emoji: string, channelCount: number): KnownBlock[] {
@@ -64,16 +80,7 @@ export function buildCompletionBlocks(
 
   // スキップチャンネル
   if (options?.skippedChannels && options.skippedChannels.length > 0) {
-    const chList = options.skippedChannels.map(ch => `#${ch.name}`).join(', ');
-    blocks.push({
-      type: 'context',
-      elements: [
-        {
-          type: 'mrkdwn',
-          text: t(locale, 'completion.skippedChannels', { channels: chList }),
-        },
-      ],
-    });
+    blocks.push(buildSkippedChannelsBlock(locale, options.skippedChannels));
   }
 
   // ヒント
@@ -108,16 +115,7 @@ export function buildNoResultBlocks(locale: SupportedLocale, skippedChannels?: C
   ];
 
   if (skippedChannels && skippedChannels.length > 0) {
-    const chList = skippedChannels.map(ch => `#${ch.name}`).join(', ');
-    blocks.push({
-      type: 'context',
-      elements: [
-        {
-          type: 'mrkdwn',
-          text: t(locale, 'completion.skippedChannels', { channels: chList }),
-        },
-      ],
-    });
+    blocks.push(buildSkippedChannelsBlock(locale, skippedChannels));
   }
 
   return blocks;

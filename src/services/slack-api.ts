@@ -10,12 +10,6 @@ const FATAL_ERRORS = new Set([
   'account_inactive',
 ]);
 
-/** スキップして続行可能なエラーコード */
-const SKIPPABLE_ERRORS = new Set([
-  'not_in_channel',
-  'channel_not_found',
-]);
-
 /** リトライ設定 */
 const MAX_RETRIES = 3;
 const BASE_DELAY_MS = 1000;
@@ -27,10 +21,22 @@ const API_TIMEOUT_MS = 30_000;
 const MAX_TOTAL_ITEMS = 10_000;
 
 /**
+ * Slack API エラーオブジェクトからエラーコードを安全に抽出する
+ */
+function extractSlackErrorCode(error: unknown): string {
+  if (typeof error !== 'object' || error === null) return '';
+  const e = error as Record<string, unknown>;
+  const dataError = (e.data as Record<string, unknown> | undefined)?.error;
+  return (typeof dataError === 'string' ? dataError : undefined) ??
+         (typeof e.code === 'string' ? e.code : '') ??
+         '';
+}
+
+/**
  * Slack APIレスポンスのエラーをAppErrorに変換
  */
 function classifyError(error: unknown): AppError {
-  const code = (error as any)?.data?.error ?? (error as any)?.code ?? '';
+  const code = extractSlackErrorCode(error);
 
   if (FATAL_ERRORS.has(code)) {
     if (code === 'missing_scope') {
@@ -84,7 +90,7 @@ export async function callWithRetry<T>(
       ]);
       return result;
     } catch (error: unknown) {
-      const code = (error as any)?.data?.error ?? (error as any)?.code ?? '';
+      const code = extractSlackErrorCode(error);
 
       if (code === 'ratelimited' && attempt < MAX_RETRIES) {
         const delay = BASE_DELAY_MS * Math.pow(2, attempt);

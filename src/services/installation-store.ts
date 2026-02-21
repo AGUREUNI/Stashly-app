@@ -3,9 +3,35 @@ import { PrismaPg } from '@prisma/adapter-pg';
 import type { Installation, InstallationQuery } from '@slack/oauth';
 import type { InstallationStore } from '@slack/oauth';
 import { encrypt, decrypt } from './crypto';
+import { AppError } from '../types';
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 export const prisma = new PrismaClient({ adapter });
+
+/**
+ * Installation オブジェクトから DB 保存用ペイロードを構築する共通ヘルパー
+ */
+function buildInstallationPayload(installation: Installation<'v2'>) {
+  return {
+    teamName: installation.team?.name ?? null,
+    enterpriseId: installation.enterprise?.id ?? null,
+    enterpriseName: installation.enterprise?.name ?? null,
+    isEnterpriseInstall: installation.isEnterpriseInstall ?? false,
+    botToken: encrypt(installation.bot!.token),
+    botRefreshToken: installation.bot!.refreshToken ? encrypt(installation.bot!.refreshToken) : null,
+    botTokenExpiresAt: installation.bot!.expiresAt
+      ? new Date(installation.bot!.expiresAt * 1000)
+      : null,
+    botId: installation.bot!.id,
+    botUserId: installation.bot!.userId,
+    botScopes: installation.bot!.scopes.join(','),
+    installerUserId: installation.user.id,
+    installerUserToken: installation.user.token ? encrypt(installation.user.token) : null,
+    installerUserScopes: installation.user.scopes?.join(',') ?? null,
+    appId: installation.appId ?? null,
+    tokenType: installation.tokenType ?? 'bot',
+  };
+}
 
 export const installationStore: InstallationStore = {
   async storeInstallation<AuthVersion extends 'v1' | 'v2'>(
@@ -13,53 +39,17 @@ export const installationStore: InstallationStore = {
   ): Promise<void> {
     const teamId = installation.team?.id;
     if (!teamId) {
-      throw new Error('Team ID is required for installation (org-wide installs are not supported)');
+      throw new AppError('FATAL_API_ERROR', 'Team ID is required for installation (org-wide installs are not supported)', undefined, 'error.orgWideNotSupported');
     }
     if (!installation.bot?.token) {
-      throw new Error('Bot token is required for installation');
+      throw new AppError('FATAL_API_ERROR', 'Bot token is required for installation', undefined, 'error.genericFallback');
     }
 
+    const payload = buildInstallationPayload(installation as Installation<'v2'>);
     await prisma.slackInstallation.upsert({
       where: { teamId },
-      create: {
-        teamId,
-        teamName: installation.team?.name ?? null,
-        enterpriseId: installation.enterprise?.id ?? null,
-        enterpriseName: installation.enterprise?.name ?? null,
-        isEnterpriseInstall: installation.isEnterpriseInstall ?? false,
-        botToken: encrypt(installation.bot.token),
-        botRefreshToken: installation.bot.refreshToken ? encrypt(installation.bot.refreshToken) : null,
-        botTokenExpiresAt: installation.bot.expiresAt
-          ? new Date(installation.bot.expiresAt * 1000)
-          : null,
-        botId: installation.bot.id,
-        botUserId: installation.bot.userId,
-        botScopes: installation.bot.scopes.join(','),
-        installerUserId: installation.user.id,
-        installerUserToken: installation.user.token ? encrypt(installation.user.token) : null,
-        installerUserScopes: installation.user.scopes?.join(',') ?? null,
-        appId: (installation as Installation<'v2'>).appId ?? null,
-        tokenType: installation.tokenType ?? 'bot',
-      },
-      update: {
-        teamName: installation.team?.name ?? null,
-        enterpriseId: installation.enterprise?.id ?? null,
-        enterpriseName: installation.enterprise?.name ?? null,
-        isEnterpriseInstall: installation.isEnterpriseInstall ?? false,
-        botToken: encrypt(installation.bot.token),
-        botRefreshToken: installation.bot.refreshToken ? encrypt(installation.bot.refreshToken) : null,
-        botTokenExpiresAt: installation.bot.expiresAt
-          ? new Date(installation.bot.expiresAt * 1000)
-          : null,
-        botId: installation.bot.id,
-        botUserId: installation.bot.userId,
-        botScopes: installation.bot.scopes.join(','),
-        installerUserId: installation.user.id,
-        installerUserToken: installation.user.token ? encrypt(installation.user.token) : null,
-        installerUserScopes: installation.user.scopes?.join(',') ?? null,
-        appId: (installation as Installation<'v2'>).appId ?? null,
-        tokenType: installation.tokenType ?? 'bot',
-      },
+      create: { teamId, ...payload },
+      update: payload,
     });
   },
 
@@ -68,7 +58,7 @@ export const installationStore: InstallationStore = {
   ): Promise<Installation<'v1' | 'v2', boolean>> {
     const teamId = query.teamId;
     if (!teamId) {
-      throw new Error('Team ID is required (org-wide installs are not supported)');
+      throw new AppError('FATAL_API_ERROR', 'Team ID is required (org-wide installs are not supported)', undefined, 'error.orgWideNotSupported');
     }
 
     const record = await prisma.slackInstallation.findUnique({
@@ -76,7 +66,7 @@ export const installationStore: InstallationStore = {
     });
 
     if (!record) {
-      throw new Error(`Installation not found for team: ${teamId}`);
+      throw new AppError('FATAL_API_ERROR', `Installation not found for team: ${teamId}`, undefined, 'error.authInvalid');
     }
 
     return {
@@ -110,16 +100,20 @@ export const installationStore: InstallationStore = {
   ): Promise<void> {
     const teamId = query.teamId;
     if (!teamId) {
-      throw new Error('Team ID is required (org-wide installs are not supported)');
+      throw new AppError('FATAL_API_ERROR', 'Team ID is required (org-wide installs are not supported)', undefined, 'error.orgWideNotSupported');
     }
 
     try {
       await prisma.slackInstallation.delete({
         where: { teamId },
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Prisma throws P2025 when record not found - ignore silently
-      if (error?.name === 'PrismaClientKnownRequestError' && error?.code === 'P2025') {
+      if (
+        typeof error === 'object' && error !== null &&
+        (error as Record<string, unknown>).name === 'PrismaClientKnownRequestError' &&
+        (error as Record<string, unknown>).code === 'P2025'
+      ) {
         return;
       }
       throw error;

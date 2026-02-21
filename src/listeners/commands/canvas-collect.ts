@@ -1,4 +1,5 @@
 import type { App } from '@slack/bolt';
+import type { WebClient } from '@slack/web-api';
 import type { KnownBlock } from '@slack/types';
 import { parseCommand } from '../../services/command-parser';
 import { collectMessages, resolveChannelNames } from '../../services/message-collector';
@@ -17,25 +18,48 @@ import {
   buildLockConflictBlocks,
 } from '../../services/block-builder';
 
-/** per-userレートリミット: userId → 最終実行時刻 */
-const userLastExecution = new Map<string, number>();
+/** per-user レートリミット管理クラス */
+class UserRateLimiter {
+  private readonly lastExecution = new Map<string, number>();
+  private readonly cooldownMs: number;
+  private readonly cleanupInterval: ReturnType<typeof setInterval>;
 
-/** クールダウン: 60秒 */
-const USER_COOLDOWN_MS = 60 * 1000;
+  constructor(cooldownMs: number) {
+    this.cooldownMs = cooldownMs;
+    this.cleanupInterval = setInterval(() => this.cleanup(), cooldownMs);
+  }
 
-/** 古いレートリミットエントリを定期クリーンアップ */
-setInterval(() => {
-  const now = Date.now();
-  for (const [userId, lastExec] of userLastExecution) {
-    if (now - lastExec > USER_COOLDOWN_MS) {
-      userLastExecution.delete(userId);
+  /** クールダウン中なら true */
+  isLimited(userId: string): boolean {
+    const last = this.lastExecution.get(userId);
+    return last !== undefined && Date.now() - last < this.cooldownMs;
+  }
+
+  /** 実行時刻を記録 */
+  record(userId: string): void {
+    this.lastExecution.set(userId, Date.now());
+  }
+
+  /** テスト用: 全エントリをクリア */
+  _clearForTest(): void {
+    this.lastExecution.clear();
+  }
+
+  private cleanup(): void {
+    const now = Date.now();
+    for (const [userId, lastExec] of this.lastExecution) {
+      if (now - lastExec > this.cooldownMs) {
+        this.lastExecution.delete(userId);
+      }
     }
   }
-}, USER_COOLDOWN_MS);
+}
+
+const userRateLimiter = new UserRateLimiter(60 * 1000);
 
 /** テスト用: per-userレートリミットをクリア */
 export function _clearUserRateLimitForTest(): void {
-  userLastExecution.clear();
+  userRateLimiter._clearForTest();
 }
 
 /**
@@ -45,7 +69,7 @@ export function _clearUserRateLimitForTest(): void {
 export async function handleCanvasCollect({ command, ack, client }: {
   command: { text?: string; channel_id: string; user_id: string; team_id: string; team_domain: string };
   ack: () => Promise<void>;
-  client: any;
+  client: WebClient;
 }): Promise<void> {
   // 1. 即座にSlackに応答（3秒制限）
   await ack();
@@ -69,14 +93,12 @@ export async function handleCanvasCollect({ command, ack, client }: {
   };
 
   // per-userレートリミットチェック
-  const now = Date.now();
-  const lastExec = userLastExecution.get(userId);
-  if (lastExec && now - lastExec < USER_COOLDOWN_MS) {
+  if (userRateLimiter.isLimited(userId)) {
     const msg = t(locale, 'error.userRateLimited');
     await sendEphemeral(msg, buildErrorBlocks(msg));
     return;
   }
-  userLastExecution.set(userId, now);
+  userRateLimiter.record(userId);
 
   let emoji: string | undefined;
 
@@ -183,6 +205,7 @@ export async function handleCanvasCollect({ command, ack, client }: {
         }
         await sendEphemeral(msg, buildErrorBlocks(msg));
       } else {
+        console.error('Unexpected error in handleCanvasCollect:', error);
         const msg = t(locale, 'error.genericFallback');
         await sendEphemeral(msg, buildErrorBlocks(msg));
       }

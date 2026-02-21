@@ -472,6 +472,26 @@ describe('handleCanvasCollect 統合テスト', () => {
     expect(client.canvases.edit).not.toHaveBeenCalled();
   });
 
+  it('#21 同一ユーザーが連続実行 → 2回目はレートリミットエラー', async () => {
+    const command = createMockCommand({ text: ':thumbsup: last 7 days' });
+    setupHistoryWithReactions(client, 'thumbsup', 2);
+
+    // 1回目: 正常に実行（userId を記録）
+    await handleCanvasCollect({ command, ack, client });
+    const firstCallCount = (client.chat.postEphemeral as ReturnType<typeof vi.fn>).mock.calls.length;
+
+    // 2回目（即実行）: レートリミット発動
+    await handleCanvasCollect({ command, ack, client });
+    const allCalls = (client.chat.postEphemeral as ReturnType<typeof vi.fn>).mock.calls;
+    const newCallCount = allCalls.length - firstCallCount;
+
+    expect(newCallCount).toBe(1);
+    const rateLimitMsg = allCalls[firstCallCount][0].text;
+    expect(rateLimitMsg).toContain('rate limit');
+    // 2回目はCanvas作成されていない
+    expect((client.canvases.create as ReturnType<typeof vi.fn>).mock.calls.length).toBe(1);
+  });
+
   it('#20 Free プラン: 既存Canvas なし・30日以内 → 新規作成OK', async () => {
     vi.stubEnv('PLAN_OVERRIDE', 'free');
     const command = createMockCommand({ text: ':thumbsup: last 7 days' });
@@ -487,5 +507,33 @@ describe('handleCanvasCollect 統合テスト', () => {
     expect(client.canvases.create).toHaveBeenCalledOnce();
     const createArgs = client.canvases.create.mock.calls[0][0];
     expect(createArgs.title).toBe(':thumbsup: Collection Log');
+  });
+
+  // ─── UserRateLimiter cleanup ────────────────────────────
+
+  it('クールダウン経過後はレートリミットが解除される（cleanup 動作確認）', async () => {
+    vi.useFakeTimers();
+    try {
+      const command = createMockCommand({ text: ':thumbsup: last 7 days' });
+      setupHistoryWithReactions(client, 'thumbsup', 1);
+
+      // 1回目: 実行（userId を記録）
+      await handleCanvasCollect({ command, ack, client });
+
+      // クールダウン（60秒）経過 + cleanup インターバル発火
+      vi.advanceTimersByTime(61 * 1000);
+
+      // モックをリセット（2回目の実行用）
+      client.chat.postEphemeral.mockClear();
+      setupHistoryWithReactions(client, 'thumbsup', 1);
+
+      // 2回目: クールダウン後なのでレートリミットにならず正常実行
+      await handleCanvasCollect({ command, ack, client });
+
+      // レートリミットではなく正常フロー（収集中 + 完了 = 2回）
+      expect(client.chat.postEphemeral).toHaveBeenCalledTimes(2);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

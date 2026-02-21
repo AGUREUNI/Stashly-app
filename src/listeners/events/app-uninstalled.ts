@@ -1,34 +1,38 @@
 import type { App } from '@slack/bolt';
 import { installationStore } from '../../services/installation-store';
 
-export function registerAppUninstalledEvent(app: App): void {
-  app.event('app_uninstalled', async ({ event, context }) => {
-    const teamId = context.teamId;
-    if (!teamId) {
-      console.warn('app_uninstalled: teamId not found in context');
-      return;
-    }
+/**
+ * アンインストール共通処理
+ * teamId チェック → deleteInstallation → エラー保護
+ */
+async function handleUninstall(
+  teamId: string | undefined,
+  enterpriseId: string | undefined,
+  eventName: string,
+): Promise<void> {
+  if (!teamId) {
+    console.warn(`${eventName}: teamId not found in context`);
+    return;
+  }
 
-    console.log(`App uninstalled from team: ${teamId}`);
+  console.log(`${eventName}: removing installation for team: ${teamId}`);
+  try {
     await installationStore.deleteInstallation!({
       teamId,
-      enterpriseId: context.enterpriseId,
+      enterpriseId,
       isEnterpriseInstall: false,
     });
+  } catch (error) {
+    console.error(`${eventName}: failed to delete installation for team ${teamId}:`, error);
+  }
+}
+
+export function registerAppUninstalledEvent(app: App): void {
+  app.event('app_uninstalled', async ({ event, context }) => {
+    await handleUninstall(context.teamId, context.enterpriseId, 'app_uninstalled');
   });
 
   app.event('tokens_revoked', async ({ event, context }) => {
-    const teamId = context.teamId;
-    if (!teamId) {
-      console.warn('tokens_revoked: teamId not found in context');
-      return;
-    }
-
-    console.log(`Tokens revoked for team: ${teamId}`);
-    await installationStore.deleteInstallation!({
-      teamId,
-      enterpriseId: context.enterpriseId,
-      isEnterpriseInstall: false,
-    });
+    await handleUninstall(context.teamId, context.enterpriseId, 'tokens_revoked');
   });
 }

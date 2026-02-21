@@ -29,10 +29,7 @@ export async function collectMessages(
   for (const channelId of channelIds) {
     // Bot参加チェック
     if (!botChannels.has(channelId)) {
-      const info = await getChannelInfo(client, channelId);
-      if (info) {
-        skippedChannels.push(info);
-      }
+      skippedChannels.push(await getChannelInfo(client, channelId));
       continue;
     }
 
@@ -48,10 +45,7 @@ export async function collectMessages(
       channelLimitReached.set(channelId, limitReached);
     } catch (error) {
       if (isSkippableError(error)) {
-        const info = await getChannelInfo(client, channelId);
-        if (info) {
-          skippedChannels.push(info);
-        }
+        skippedChannels.push(await getChannelInfo(client, channelId));
         continue;
       }
       throw error;
@@ -214,15 +208,27 @@ async function collectFromThread(
 /**
  * メッセージに指定絵文字のリアクションがあるかチェック
  */
-function hasReaction(message: any, emoji: string): boolean {
+function hasReaction(
+  message: { reactions?: Array<{ name?: string }> },
+  emoji: string,
+): boolean {
   if (!Array.isArray(message.reactions)) return false;
-  return message.reactions.some((r: any) => typeof r.name === 'string' && r.name === emoji);
+  return message.reactions.some((r) => typeof r.name === 'string' && r.name === emoji);
 }
 
+/** getBotChannels の結果を WebClient インスタンス単位でキャッシュ（TTL: 1分） */
+const botChannelsCache = new WeakMap<WebClient, { channels: Set<string>; expiresAt: number }>();
+const BOT_CHANNELS_CACHE_TTL_MS = 60 * 1000;
+
 /**
- * Bot参加チャンネルIDのSetを取得
+ * Bot参加チャンネルIDのSetを取得（インスタンス単位でキャッシュ）
  */
 async function getBotChannels(client: WebClient): Promise<Set<string>> {
+  const cached = botChannelsCache.get(client);
+  if (cached && Date.now() < cached.expiresAt) {
+    return cached.channels;
+  }
+
   const channels = new Set<string>();
   let cursor: string | undefined;
 
@@ -242,38 +248,30 @@ async function getBotChannels(client: WebClient): Promise<Set<string>> {
     cursor = result.response_metadata?.next_cursor || undefined;
   } while (cursor);
 
+  botChannelsCache.set(client, { channels, expiresAt: Date.now() + BOT_CHANNELS_CACHE_TTL_MS });
   return channels;
+}
+
+/**
+ * チャンネル情報を取得
+ */
+async function getChannelInfo(client: WebClient, channelId: string): Promise<ChannelInfo> {
+  try {
+    const result = await callWithRetry(() =>
+      client.conversations.info({ channel: channelId }),
+    );
+    const name = (result.channel as { name?: string } | undefined)?.name ?? channelId;
+    return { id: channelId, name };
+  } catch {
+    return { id: channelId, name: channelId };
+  }
 }
 
 /**
  * チャンネル名を取得
  */
 async function getChannelName(client: WebClient, channelId: string): Promise<string> {
-  try {
-    const result = await callWithRetry(() =>
-      client.conversations.info({ channel: channelId }),
-    );
-    return (result.channel as any)?.name ?? channelId;
-  } catch {
-    return channelId;
-  }
-}
-
-/**
- * チャンネル情報を取得
- */
-async function getChannelInfo(client: WebClient, channelId: string): Promise<ChannelInfo | null> {
-  try {
-    const result = await callWithRetry(() =>
-      client.conversations.info({ channel: channelId }),
-    );
-    return {
-      id: channelId,
-      name: (result.channel as any)?.name ?? channelId,
-    };
-  } catch {
-    return { id: channelId, name: channelId };
-  }
+  return (await getChannelInfo(client, channelId)).name;
 }
 
 /**

@@ -14,6 +14,13 @@ function validateTeamDomain(teamDomain: string): void {
 const FILES_LIST_LIMIT = 100;
 
 /**
+ * Canvas の URL を生成する
+ */
+function buildCanvasUrl(teamDomain: string, teamId: string, canvasId: string): string {
+  return `https://${teamDomain}.slack.com/docs/${teamId}/${canvasId}`;
+}
+
+/**
  * Canvasタイトルを生成
  * 形式: ":emoji: Collection Log"（全言語共通・英語固定）
  */
@@ -99,7 +106,7 @@ export async function createCanvas(
   }
 
   // Canvas URLを生成
-  const canvasUrl = result.canvas_url ?? `https://${teamDomain}.slack.com/docs/${teamId}/${result.canvas_id}`;
+  const canvasUrl = result.canvas_url ?? buildCanvasUrl(teamDomain, teamId, result.canvas_id);
 
   return {
     canvasId: result.canvas_id,
@@ -168,7 +175,7 @@ export async function upsertCanvas(
     if (canAppend) {
       // Pro プラン: 既存 Canvas に追記
       await appendToCanvas(client, existing.id, appendContentMarkdown);
-      const canvasUrl = `https://${teamDomain}.slack.com/docs/${teamId}/${existing.id}`;
+      const canvasUrl = buildCanvasUrl(teamDomain, teamId, existing.id);
       return { canvasUrl, isNew: false };
     } else {
       // Free プラン: 既存 Canvas を削除して新規作成（上書き）
